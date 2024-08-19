@@ -1,12 +1,27 @@
-import Pila
 import matplotlib.pyplot as plt
 from matplotlib.animation import FuncAnimation
-class Grafico(Pila):
+from Pila import Pila as p
+
+class Grafico(p):
     def __init__(self):
         super().__init__()
     
-    def apilarPila(self):
-        Pila.apilar()
+    def apilar(self,proceso):
+        #llamada al método apilar de pila
+        super().apilar(proceso)
+    
+    def desapilar(self):
+        #llamada al método desapilar de pila
+        return super().desapilar()
+
+    def esta_vacia(self):
+        #llamada al método esta vacia de pila
+        return super().esta_vacia()
+    
+    def obtener_procesos(self):
+        #llamada al método obtener procesos de pila
+        return super().obtener_procesos()
+
     def prioridad_to_width(self, prioridad):
         # Define el ancho de las barras basado en la prioridad
         if prioridad == "alta":

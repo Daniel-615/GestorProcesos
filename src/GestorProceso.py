@@ -1,11 +1,11 @@
-from Pila import Pila
 from Proceso import Proceso
 import concurrent.futures
 import os
-
+from Grafico import Grafico
 class GestorProcesos:
     def __init__(self):
-        self.pila_procesos = Pila()
+        self.pila_procesos=Grafico()
+        #self.pila_procesos = Pila()
         
     def agregar_proceso(self, proceso):
         self.pila_procesos.apilar(proceso)

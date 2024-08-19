@@ -1,4 +1,3 @@
-#hilos
 import time
 class Proceso:
     contador=0
