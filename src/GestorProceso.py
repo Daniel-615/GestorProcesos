@@ -1,12 +1,11 @@
 from Proceso import Proceso
+from Grafico import Grafico
 import concurrent.futures
 import os
-from Grafico import Grafico
 class GestorProcesos:
     def __init__(self):
         self.pila_procesos=Grafico()
-        #self.pila_procesos = Pila()
-        
+    
     def agregar_proceso(self, proceso):
         self.pila_procesos.apilar(proceso)
 
@@ -31,20 +30,17 @@ class GestorProcesos:
     def visualizar(self):
         self.pila_procesos.visualizar_pila()
 
-# Ejemplo de uso
 gestor = GestorProcesos()
 cores = gestor.consulta_cores()
 
 # Agregar procesos
 for n in range(cores):
-    gestor.agregar_proceso(Proceso("alta", f"Proceso {n+1}", "tipo1"))
-
+    comando=input("¿Qué tipo de comando deseas ejecutar?")
+    gestor.agregar_proceso(Proceso("alta", f"Proceso {n+1}", comando))
+    
 # Visualizar antes de procesar
 gestor.visualizar()
 
 # Ejecutar procesos con el número de cores especificado
 gestor.ejecutar_procesos(max_cores=cores)
 
-# Visualizar después de procesar
-# Puedes descomentar esto si necesitas visualizar la pila después
-# gestor.visualizar()

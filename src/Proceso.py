@@ -1,18 +1,60 @@
 import time
+import subprocess
+from docx import Document
+import random
+import os
+from dotenv import load_dotenv
+load_dotenv()
+
 class Proceso:
-    contador=0
-    def __init__(self,prioridad,proceso,tipo_proceso):
-        self.contador+=1
-        self.prioridad=prioridad
-        self.proceso=proceso
-        self.tipo_proceso=tipo_proceso
+    contador = 0
+
+    def __init__(self, prioridad, proceso, tipo_proceso):
+        Proceso.contador+=1
+        self.prioridad = prioridad
+        self.proceso = proceso
+        self.tipo_proceso = tipo_proceso
+        self.numero_proceso=Proceso.contador
+
+    def ejecutar_comando(self):
+        try:
+            resultado = subprocess.run(self.tipo_proceso, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+            if resultado.returncode == 0:
+                salida = resultado.stdout
+            else:
+                salida = resultado.stderr
+            ruta=os.getenv("REPORTS_PATH")
+            nombre = f"{ruta}resultado{self.numero_proceso}.docx"
+            documento = Document()
+            documento.add_heading("Resultado del Proceso", 0)
+            documento.add_paragraph(salida)
+            documento.save(nombre)
+            print("Documento guardado con éxito.")
+        except Exception as e:
+            print(f"Error al ejecutar el comando: {e}")
+
+    def calcular_tiempo_ejecucion(self):
+        if self.prioridad == "alta":
+            tiempo = random.uniform(1, 3)  
+        elif self.prioridad == "media":
+            tiempo = random.uniform(3, 6) 
+        elif self.prioridad == "baja":
+            tiempo = random.uniform(6, 10)  
+        else:
+            tiempo = 5  
+        return tiempo
+
     def ejecutar(self):
-        if self.prioridad=="alta":
-            self.tiempo=2
-        if self.prioridad=="media":
-            self.tiempo=4
-        if self.prioridad=="baja":
-            self.tiempo=8
-        print(f"ejecutando proceso con prioridad {self.prioridad} tipo: ({self.tipo_proceso}) ")
-        time.sleep(self.tiempo)
-        print(f"Proceso {self.proceso} completado en {self.tiempo} segundos")
+        try:
+            # Calcula el tiempo de simulación basado en la prioridad
+            self.tiempo = self.calcular_tiempo_ejecucion()
+
+            # Llama al método ejecutar_comando
+            self.ejecutar_comando()
+            print(f"Ejecutando proceso con prioridad {self.prioridad} tipo: ({self.tipo_proceso}) ")
+
+            # Simula el tiempo de ejecución
+            time.sleep(self.tiempo)
+            print(f"Proceso {self.proceso} completado en {self.tiempo:.2f} segundos")
+        except Exception as e:
+            print(f"Error al ejecutar el proceso: {e}")
