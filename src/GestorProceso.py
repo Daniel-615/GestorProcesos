@@ -18,8 +18,8 @@ class GestorProcesos:
                 proceso = self.cola_procesos.desencolar()
                 if proceso:
                     futuro = executor.submit(proceso.ejecutar)
-                    self.estado=proceso.getEstado()
-                    print("Estado en el Gestor: ",self.estado)
+                    estado=proceso.getEvento().getEstado()
+                    print("Estado en el Gestor: ",estado)
                     futuros.append(futuro)
             
             for futuro in concurrent.futures.as_completed(futuros):

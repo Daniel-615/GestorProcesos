@@ -1,19 +1,19 @@
 import matplotlib.pyplot as plt
 from matplotlib.animation import FuncAnimation
-from Cola import Cola as c  # Cambia el alias de `p` a `c`
+from Cola import Cola as c  
 import os
 from dotenv import load_dotenv
 
 load_dotenv()
 
-class Grafico(c):  # Cambia la herencia de Pila a Cola
+class Grafico(c): 
     def __init__(self):
         super().__init__()
     
-    def encolar(self, proceso):  # Cambia `apilar` por `encolar`
+    def encolar(self, proceso):  
         super().encolar(proceso)
     
-    def desencolar(self):  # Cambia `desapilar` por `desencolar`
+    def desencolar(self): 
         return super().desencolar()
 
     def esta_vacia(self):
@@ -31,9 +31,9 @@ class Grafico(c):  # Cambia la herencia de Pila a Cola
             return 0.5
         return 0.5
     
-    def visualizar_cola(self):  # Cambia el nombre de `visualizar_pila` a `visualizar_cola`
+    def visualizar_cola(self): 
         try:
-            fig, ax = plt.subplots(figsize=(12, 8))  # Ajusta el tamaño de la figura
+            fig, ax = plt.subplots(figsize=(12, 8))  
 
             def actualizar(frame):
                 ax.clear()
@@ -57,20 +57,20 @@ class Grafico(c):  # Cambia la herencia de Pila a Cola
 
                     ax.set_xlim(0, max(anchos) * 1.5)
                     ax.set_xlabel('Ancho basado en Prioridad')
-                    ax.set_title('Visualización de la Cola')  # Cambia el título para reflejar que es una cola
+                    ax.set_title('Visualización de la Cola') 
 
             anim = FuncAnimation(fig, actualizar, frames=10, interval=1000)
             
-            # Asegúrate de dibujar la figura antes de guardar
+            #Dibuja la figura antes de guardar
             fig.canvas.draw()
             
             # Guardar la imagen
             ruta = os.getenv("REPORTS_PATH")
-            plt.savefig(f'{ruta}visualizacion_cola.png', format='png')  # Cambia el nombre del archivo guardado
+            plt.savefig(f'{ruta}visualizacion_cola.png', format='png')  
             print("Imagen guardada como 'visualizacion_cola.png'.")
             
             # Mostrar la figura después de guardar
             plt.show()
 
         except Exception as e:
-            print(f"Error al visualizar la Cola: {e}")  # Cambia el mensaje de error para reflejar que es una cola
+            print(f"Error al visualizar la Cola: {e}")  

@@ -4,6 +4,7 @@ from docx import Document
 import random
 import os
 from dotenv import load_dotenv
+from Evento import Evento
 load_dotenv()
 
 class Proceso:
@@ -25,16 +26,12 @@ class Proceso:
         self.tipo_proceso = tipo_proceso
         self.numero_proceso = Proceso.contador
         self.comandos_permitidos=Proceso.comandos_permitidos
-        
-        self.estado="Nuevo" 
-        #self.tiempo_llegada
-        #self.
-
-    def getEstado(self):
-        return self.estado
-    def setEstado(self,estado):
-        self.estado=estado
-        print("Estado se encuentra en: ",self.estado)
+    #Obtengo el evento para ser usado en GestorProceso
+    def getEvento(self):
+        return self.evento
+    def startProcess(self):
+        self.tiempo_llegada=time.time()
+        self.tiempo_llegada = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(self.tiempo_llegada))
     #Acceder al método sin una instancia
     @classmethod
     def devolver_comandos(self):
@@ -55,7 +52,7 @@ class Proceso:
                 salida = resultado.stderr
 
             ruta = os.getenv("REPORTS_PATH")
-            nombre = f"{ruta}resultado{self.numero_proceso}.docx"
+            nombre = f"{ruta}resultado{self.numero_proceso}.pdf"
             documento = Document()
             documento.add_heading("Resultado del Proceso", 0)
             documento.add_paragraph(salida)
@@ -77,9 +74,11 @@ class Proceso:
     
     def ejecutar(self):
         try:
-            if self.estado=="Nuevo":
-                self.setEstado("Listo")
-                if self.estado=="Listo":
+            self.evento=Evento()
+            self.startProcess()
+            if self.evento.getEstado()=="Nuevo":
+                self.evento.setEstado("Listo")
+                if self.evento.getEstado()=="Listo":
                     # Calcula el tiempo de simulación basado en la prioridad
                     self.rafaga_cpu = self.calcular_tiempo_ejecucion()
 
@@ -88,11 +87,12 @@ class Proceso:
                     print(f"Ejecutando proceso con prioridad {self.prioridad} tipo: ({self.tipo_proceso}) ")
 
                     # Simula el tiempo de ejecución
-                    self.setEstado="Ejecución"
+                    self.evento.setEstado("Ejecución")
                     time.sleep(self.rafaga_cpu)
                     print(f"Tiempo estimado del proceso {self.proceso}: {self.rafaga_cpu:.2f} segundos")
+                    print(f"Momento en que se inicio: {self.tiempo_llegada}")
                 else: 
-                    print("El estado no se encuentra Listo")
+                    print("El proceso no se encuentra en estado Listo")
             else: 
                 print("El proceso no se encuentra en estado: Nuevo")
         except Exception as e:
