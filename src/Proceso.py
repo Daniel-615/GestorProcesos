@@ -25,7 +25,16 @@ class Proceso:
         self.tipo_proceso = tipo_proceso
         self.numero_proceso = Proceso.contador
         self.comandos_permitidos=Proceso.comandos_permitidos
+        
+        self.estado="Nuevo" 
+        #self.tiempo_llegada
+        #self.
 
+    def getEstado(self):
+        return self.estado
+    def setEstado(self,estado):
+        self.estado=estado
+        print("Estado se encuentra en: ",self.estado)
     #Acceder al método sin una instancia
     @classmethod
     def devolver_comandos(self):
@@ -65,18 +74,26 @@ class Proceso:
         else:
             tiempo = 5  
         return tiempo
-
+    
     def ejecutar(self):
         try:
-            # Calcula el tiempo de simulación basado en la prioridad
-            self.tiempo = self.calcular_tiempo_ejecucion()
+            if self.estado=="Nuevo":
+                self.setEstado("Listo")
+                if self.estado=="Listo":
+                    # Calcula el tiempo de simulación basado en la prioridad
+                    self.rafaga_cpu = self.calcular_tiempo_ejecucion()
 
-            # Llama al método ejecutar_comando
-            self.ejecutar_comando()
-            print(f"Ejecutando proceso con prioridad {self.prioridad} tipo: ({self.tipo_proceso}) ")
+                    # Llama al método ejecutar_comando
+                    self.ejecutar_comando()
+                    print(f"Ejecutando proceso con prioridad {self.prioridad} tipo: ({self.tipo_proceso}) ")
 
-            # Simula el tiempo de ejecución
-            time.sleep(self.tiempo)
-            print(f"Tiempo estimado del proceso {self.proceso}: {self.tiempo:.2f} segundos")
+                    # Simula el tiempo de ejecución
+                    self.setEstado="Ejecución"
+                    time.sleep(self.rafaga_cpu)
+                    print(f"Tiempo estimado del proceso {self.proceso}: {self.rafaga_cpu:.2f} segundos")
+                else: 
+                    print("El estado no se encuentra Listo")
+            else: 
+                print("El proceso no se encuentra en estado: Nuevo")
         except Exception as e:
             print(f"Error al ejecutar el proceso: {e}")

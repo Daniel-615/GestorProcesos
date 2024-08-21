@@ -4,20 +4,22 @@ import concurrent.futures
 import os
 class GestorProcesos:
     def __init__(self):
-        self.pila_procesos=Grafico()
+        self.cola_procesos=Grafico()
     
     def getCores(self):
         return self.cores
     def agregar_proceso(self, proceso):
-        self.pila_procesos.apilar(proceso)
+        self.cola_procesos.encolar(proceso)
     
     def ejecutar_procesos(self, max_cores):
         with concurrent.futures.ThreadPoolExecutor(max_workers=max_cores) as executor:
             futuros = []
-            while not self.pila_procesos.esta_vacia():
-                proceso = self.pila_procesos.desapilar()
+            while not self.cola_procesos.esta_vacia():
+                proceso = self.cola_procesos.desencolar()
                 if proceso:
                     futuro = executor.submit(proceso.ejecutar)
+                    self.estado=proceso.getEstado()
+                    print("Estado en el Gestor: ",self.estado)
                     futuros.append(futuro)
             
             for futuro in concurrent.futures.as_completed(futuros):
@@ -31,7 +33,7 @@ class GestorProcesos:
         return cores
     
     def visualizar(self):
-        self.pila_procesos.visualizar_pila()
+        self.cola_procesos.visualizar_cola()
 
 gestor = GestorProcesos()
 cores = gestor.consulta_cores()

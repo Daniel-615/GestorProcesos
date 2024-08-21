@@ -1,18 +1,20 @@
 import matplotlib.pyplot as plt
 from matplotlib.animation import FuncAnimation
-from Pila import Pila as p
+from Cola import Cola as c  # Cambia el alias de `p` a `c`
 import os
 from dotenv import load_dotenv
+
 load_dotenv()
-class Grafico(p):
+
+class Grafico(c):  # Cambia la herencia de Pila a Cola
     def __init__(self):
         super().__init__()
     
-    def apilar(self, proceso):
-        super().apilar(proceso)
+    def encolar(self, proceso):  # Cambia `apilar` por `encolar`
+        super().encolar(proceso)
     
-    def desapilar(self):
-        return super().desapilar()
+    def desencolar(self):  # Cambia `desapilar` por `desencolar`
+        return super().desencolar()
 
     def esta_vacia(self):
         return super().esta_vacia()
@@ -29,7 +31,7 @@ class Grafico(p):
             return 0.5
         return 0.5
     
-    def visualizar_pila(self):
+    def visualizar_cola(self):  # Cambia el nombre de `visualizar_pila` a `visualizar_cola`
         try:
             fig, ax = plt.subplots(figsize=(12, 8))  # Ajusta el tamaño de la figura
 
@@ -55,7 +57,7 @@ class Grafico(p):
 
                     ax.set_xlim(0, max(anchos) * 1.5)
                     ax.set_xlabel('Ancho basado en Prioridad')
-                    ax.set_title('Visualización de la Pila')
+                    ax.set_title('Visualización de la Cola')  # Cambia el título para reflejar que es una cola
 
             anim = FuncAnimation(fig, actualizar, frames=10, interval=1000)
             
@@ -64,11 +66,11 @@ class Grafico(p):
             
             # Guardar la imagen
             ruta = os.getenv("REPORTS_PATH")
-            plt.savefig(f'{ruta}visualizacion_pila.png', format='png')
-            print("Imagen guardada como 'visualizacion_pila.png'.")
+            plt.savefig(f'{ruta}visualizacion_cola.png', format='png')  # Cambia el nombre del archivo guardado
+            print("Imagen guardada como 'visualizacion_cola.png'.")
             
             # Mostrar la figura después de guardar
             plt.show()
 
         except Exception as e:
-            print(f"Error al visualizar la Pila: {e}")
+            print(f"Error al visualizar la Cola: {e}")  # Cambia el mensaje de error para reflejar que es una cola
