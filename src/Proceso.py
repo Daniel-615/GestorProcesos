@@ -26,18 +26,25 @@ class Proceso:
         self.tipo_proceso = tipo_proceso
         self.numero_proceso = Proceso.contador
         self.comandos_permitidos=Proceso.comandos_permitidos
+
     #Obtengo el evento para ser usado en GestorProceso
     def getEvento(self):
         return self.evento
+    
     def startProcess(self):
+        """"Obtengo hora formateada.
+        """
         self.tiempo_llegada=time.time()
         self.tiempo_llegada = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(self.tiempo_llegada))
+
     #Acceder al método sin una instancia
     @classmethod
     def devolver_comandos(self):
         return self.comandos_permitidos
     
     def ejecutar_comando(self):
+        """Corre un proceso de una lista, hace un reporte acorde a los resultados.
+        """
         try:
             # Verificar si el tipo_proceso está en la lista de comandos permitidos
             if self.tipo_proceso in Proceso.comandos_permitidos:
@@ -52,7 +59,7 @@ class Proceso:
                 salida = resultado.stderr
 
             ruta = os.getenv("REPORTS_PATH")
-            nombre = f"{ruta}resultado{self.numero_proceso}.pdf"
+            nombre = f"{ruta}resultado{self.numero_proceso}.docx"
             documento = Document()
             documento.add_heading("Resultado del Proceso", 0)
             documento.add_paragraph(salida)
@@ -62,6 +69,8 @@ class Proceso:
             print(f"Error al ejecutar el comando: {e}")
 
     def calcular_tiempo_ejecucion(self):
+        """Simula el tiempo de ejecución acorde a la prioridad.
+        """
         if self.prioridad == "alta":
             tiempo = random.uniform(1, 3)
         elif self.prioridad == "media":
@@ -73,6 +82,7 @@ class Proceso:
         return tiempo
     
     def ejecutar(self):
+        """Ejecuta y pasa filtros acorde a los eventos."""
         try:
             self.evento=Evento()
             self.startProcess()

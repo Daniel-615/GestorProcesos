@@ -5,12 +5,20 @@ import os
 class GestorProcesos:
     def __init__(self):
         self.cola_procesos=Grafico()
-    
+        self.cola_procesos_listos=Grafico()  #implementar esta funcionalidad
+        self.cola_procesos_bloqueados=Grafico() #implementar esta funcionalidad
     def getCores(self):
         return self.cores
     def agregar_proceso(self, proceso):
         self.cola_procesos.encolar(proceso)
-    
+    def mover_proceso_listo(self,proceso):
+        self.cola_procesos_listos.encolar(proceso)
+    def mover_proceso_bloqueados(self,proceso):
+        self.cola_procesos_bloqueados.encolar(proceso)
+    def desbloquear_proceso(self):
+        if not self.cola_procesos_bloqueados.esta_vacia():
+            proceso = self.cola_procesos_bloqueados.desencolar()
+            self.mover_proceso_listo(proceso)    
     def ejecutar_procesos(self, max_cores):
         with concurrent.futures.ThreadPoolExecutor(max_workers=max_cores) as executor:
             futuros = []
