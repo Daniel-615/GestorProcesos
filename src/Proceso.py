@@ -26,8 +26,13 @@ class Proceso:
         self.tipo_proceso = tipo_proceso
         self.numero_proceso = Proceso.contador
         self.comandos_permitidos=Proceso.comandos_permitidos
-
+        #Usando de manera adecuada
+        self.evento=Evento()
+        self.evento.setEstadoNuevo()
+    
     #Obtengo el evento para ser usado en GestorProceso
+    def getProceso(self):
+        return self.proceso
     def getEvento(self):
         return self.evento
     
@@ -84,26 +89,14 @@ class Proceso:
     def ejecutar(self):
         """Ejecuta y pasa filtros acorde a los eventos."""
         try:
-            self.evento=Evento()
+           
             self.startProcess()
-            if self.evento.getEstado()=="Nuevo":
-                self.evento.setEstado("Listo")
-                if self.evento.getEstado()=="Listo":
-                    # Calcula el tiempo de simulación basado en la prioridad
-                    self.rafaga_cpu = self.calcular_tiempo_ejecucion()
-
-                    # Llama al método ejecutar_comando
-                    self.ejecutar_comando()
-                    print(f"Ejecutando proceso con prioridad {self.prioridad} tipo: ({self.tipo_proceso}) ")
-
-                    # Simula el tiempo de ejecución
-                    self.evento.setEstado("Ejecución")
-                    time.sleep(self.rafaga_cpu)
-                    print(f"Tiempo estimado del proceso {self.proceso}: {self.rafaga_cpu:.2f} segundos")
-                    print(f"Momento en que se inicio: {self.tiempo_llegada}")
-                else: 
-                    print("El proceso no se encuentra en estado Listo")
-            else: 
-                print("El proceso no se encuentra en estado: Nuevo")
+            # Calcula el tiempo de simulación basado en la prioridad
+            self.rafaga_cpu = self.calcular_tiempo_ejecucion()
+            print(f"Ejecutando proceso con prioridad {self.prioridad} tipo: ({self.tipo_proceso}) ")
+            # Simula el tiempo de ejecución
+            time.sleep(self.rafaga_cpu)
+            print(f"Tiempo estimado del proceso {self.proceso}: {self.rafaga_cpu:.2f} segundos")
+            print(f"Momento en que se inicio: {self.tiempo_llegada}")
         except Exception as e:
             print(f"Error al ejecutar el proceso: {e}")

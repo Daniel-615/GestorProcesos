@@ -7,6 +7,7 @@ class GestorProcesos:
         self.cola_procesos=Grafico()
         self.cola_procesos_listos=Grafico()  #implementar esta funcionalidad
         self.cola_procesos_bloqueados=Grafico() #implementar esta funcionalidad
+        
     def getCores(self):
         return self.cores
     def agregar_proceso(self, proceso):
@@ -19,20 +20,41 @@ class GestorProcesos:
         if not self.cola_procesos_bloqueados.esta_vacia():
             proceso = self.cola_procesos_bloqueados.desencolar()
             self.mover_proceso_listo(proceso)    
+
+
     def ejecutar_procesos(self, max_cores):
         with concurrent.futures.ThreadPoolExecutor(max_workers=max_cores) as executor:
             futuros = []
+            procesos_completados = []
+
             while not self.cola_procesos.esta_vacia():
                 proceso = self.cola_procesos.desencolar()
                 if proceso:
-                    futuro = executor.submit(proceso.ejecutar)
-                    estado=proceso.getEvento().getEstado()
-                    print("Estado en el Gestor: ",estado)
-                    futuros.append(futuro)
-            
-            for futuro in concurrent.futures.as_completed(futuros):
-                futuro.result()
-                print("Proceso completado.")
+                    evento = proceso.getEvento()
+                    if evento.getEstado() == "Nuevo":
+                        evento.avanzarEstado()
+                        if evento.getEstado()=="Listo":
+                            futuro=executor.submit(proceso.ejecutar)
+                            evento.avanzarEstado()
+                            futuros.append((futuro,proceso))
+                            if evento.getEstado()=="Ejecucion":
+                                proceso.ejecutar_comando()
+                                evento.avanzarEstado()
+                                print(f"Proceso {proceso.getProceso()} está en ejecución.")
+                                if evento.getEstado()=="Terminado":
+                                    print(f"Proceso {proceso.getProceso()} terminado.")
+                                    procesos_completados.append(proceso)
+                    
+            # Asegurarse de que todos los procesos han sido completados
+            for futuro, proceso in futuros:
+                futuro.result() 
+                evento = proceso.getEvento()
+                if evento.getEstado() == "En ejecucion":
+                    evento.avanzarEstado()  
+                procesos_completados.append(proceso)
+                print("Proceso completado:", proceso.getProceso())
+        
+        return procesos_completados
 
     def consulta_cores(self):
         self.cores = os.cpu_count()

@@ -6,13 +6,13 @@ class Recursos:
 
     def obtener_uso_cpu(self):
         uso_cpu = psutil.cpu_percent(interval=1)
-        print(f"Uso de CPU: {uso_cpu}%")
+        #print(f"Uso de CPU: {uso_cpu}%")
         return uso_cpu
 
     def obtener_info_cpu(self):
         num_nucleos_logicos = psutil.cpu_count(logical=True)
         num_nucleos_fisicos = psutil.cpu_count(logical=False)
-        print(f"Núcleos lógicos: {num_nucleos_logicos}, Núcleos físicos: {num_nucleos_fisicos}")
+        #print(f"Núcleos lógicos: {num_nucleos_logicos}, Núcleos físicos: {num_nucleos_fisicos}")
         return num_nucleos_logicos, num_nucleos_fisicos
 
     def obtener_info_memoria(self):
@@ -21,10 +21,10 @@ class Recursos:
         memoria_disponible = memoria.available / (1024 ** 3)
         memoria_en_uso = memoria.used / (1024 ** 3)
         uso_memoria = memoria.percent
-        print(f"Memoria Total: {total_memoria:.2f} GB")
-        print(f"Memoria Disponible: {memoria_disponible:.2f} GB")
-        print(f"Memoria en Uso: {memoria_en_uso:.2f} GB ({uso_memoria}%)")
-        return total_memoria, memoria_disponible, memoria_en_uso, uso_memoria
+        #print(f"Memoria Total: {total_memoria:.2f} GB")
+        #print(f"Memoria Disponible: {memoria_disponible:.2f} GB")
+        #print(f"Memoria en Uso: {memoria_en_uso:.2f} GB ({uso_memoria}%)")
+        return memoria_disponible
 
     def obtener_info_disco(self):
         disco = psutil.disk_usage('/')
@@ -54,11 +54,3 @@ class Recursos:
         print(f"Bytes recibidos: {bytes_recibidos:.2f} MB")
         return bytes_enviados, bytes_recibidos
 
-# Ejemplo de uso
-recursos = Recursos()
-recursos.obtener_uso_cpu()
-recursos.obtener_info_cpu()
-recursos.obtener_info_memoria()
-recursos.obtener_info_disco()
-#recursos.obtener_info_procesos()
-recursos.obtener_info_red()
