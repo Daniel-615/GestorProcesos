@@ -7,8 +7,9 @@ from dotenv import load_dotenv
 load_dotenv()
 
 class Grafico(c): 
-    def __init__(self):
+    def __init__(self):       
         super().__init__()
+        self.contador=c.getContador() 
     
     def encolar(self, proceso):  
         super().encolar(proceso)
@@ -31,7 +32,7 @@ class Grafico(c):
             return 0.5
         return 0.5
     
-    def visualizar_cola(self): 
+    def visualizar_cola(self,file): 
         try:
             fig, ax = plt.subplots(figsize=(12, 8))  
 
@@ -66,7 +67,7 @@ class Grafico(c):
             
             # Guardar la imagen
             ruta = os.getenv("REPORTS_PATH")
-            plt.savefig(f'{ruta}visualizacion_cola.png', format='png')  
+            plt.savefig(f'{ruta}{file}.png', format='png')  
             print("Imagen guardada como 'visualizacion_cola.png'.")
             
             # Mostrar la figura después de guardar

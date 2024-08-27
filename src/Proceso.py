@@ -19,7 +19,7 @@ class Proceso:
         "Lista de Tareas": "Tasklist"
     }
 
-    def __init__(self, prioridad, proceso, tipo_proceso):
+    def __init__(self, prioridad, proceso, tipo_proceso,gestor):
         Proceso.contador += 1
         self.prioridad = prioridad
         self.proceso = proceso
@@ -27,7 +27,7 @@ class Proceso:
         self.numero_proceso = Proceso.contador
         self.comandos_permitidos=Proceso.comandos_permitidos
         #Usando de manera adecuada
-        self.evento=Evento()
+        self.evento=Evento(gestor)
         self.evento.setEstadoNuevo()
     
     #Obtengo el evento para ser usado en GestorProceso

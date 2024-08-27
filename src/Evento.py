@@ -3,11 +3,13 @@ from Recursos import Recursos
 class Evento():
     contador = 0
 
-    def __init__(self):
+    def __init__(self,gestor):
         Evento.contador += 1
         self.numero_evento = Evento.contador
         self.setEstadoNuevo()
         self.recursos = Recursos()
+        self.gestor=gestor
+        
 
     def getEstado(self):
         return self.estado
@@ -39,10 +41,24 @@ class Evento():
         else:
             self.setEstadoBlock()
     
-    def avanzarEstado(self):
-        if self.estado == "Nuevo":
-            self.setEstadoListo()
-        elif self.estado == "Listo":
-            self.setEstadoEjecucion()
-        elif self.estado == "Ejecucion":
-            self.setEstadoTerminado()
+    def avanzarEstado(self,proceso):
+        """Avanza el estado, encola y desencola dependiendo el estado en que se encuentre.
+        """
+        try:
+            gestor=self.gestor
+            cola_proceso_listo=gestor.getProcesosListos()
+            cola_proceso_nuevo=gestor.getProcesosNuevos()
+            cola_proceso_ejecucion=gestor.getProcesosEjecucion()
+            if self.estado == "Nuevo":
+                self.setEstadoListo()
+                gestor.mover_proceso_listo(proceso)
+                cola_proceso_nuevo.desencolar()
+            elif self.estado == "Listo":
+                self.setEstadoEjecucion()
+                gestor.mover_proceso_ejecucion(proceso)
+                cola_proceso_listo.desencolar()
+            elif self.estado == "Ejecucion":
+                self.setEstadoTerminado()
+                cola_proceso_ejecucion.desencolar()
+        except Exception as e:
+            print("Error al avanzar estado: ",e)
