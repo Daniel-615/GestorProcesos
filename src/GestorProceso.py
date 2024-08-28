@@ -23,6 +23,17 @@ class GestorProcesos:
         
     def agregar_proceso(self, proceso):
         self.cola_procesos.encolar(proceso)
+    
+    def mover_proceso(self,proceso,tipo):
+        try:
+            if tipo =="Listo":
+                self.cola_procesos_listos.encolar(proceso)
+            elif tipo=="Ejecucion":
+                self.cola_procesos_ejecucion.encolar(proceso)
+            elif tipo=="Bloqueados":
+                self.cola_procesos_bloqueados.encolar(proceso) 
+        except Exception as e:
+            print("Error al mover el proceso: ",e)
     def mover_proceso_nuevo(self,proceso):
         self.cola_procesos_nuevos.encolar(proceso)
     def mover_proceso_listo(self,proceso):
@@ -45,8 +56,12 @@ class GestorProcesos:
             futuros = []
             procesos_completados = []
 
-            while not self.cola_procesos.esta_vacia():
-                proceso = self.cola_procesos.desencolar()
+            while not self.cola_procesos.esta_vacia() or not self.cola_procesos_bloqueados.esta_vacia():
+                if not self.cola_procesos_bloqueados.esta_vacia():
+                    proceso=self.cola_procesos_bloqueados.desencolar()
+                else:
+                    proceso = self.cola_procesos.desencolar()
+                    
                 if proceso:
                     evento = proceso.getEvento()
                     if evento.getEstado() == "Nuevo":
@@ -92,8 +107,10 @@ class GestorProcesos:
             self.cola_procesos_ejecucion.visualizar_cola('cola_ejecucion')
         else:
             print("No has seleccionado una opción valida.")
+
 gestor = GestorProcesos()
 cores = gestor.consulta_cores()
+
 # Agregar procesos
 while True:
     action = input("¿Deseas agregar un nuevo proceso o empezar la ejecución? (agregar/empezar): ").strip().lower()

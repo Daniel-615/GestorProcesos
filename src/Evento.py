@@ -45,6 +45,8 @@ class Evento():
         """Avanza el estado, encola y desencola dependiendo el estado en que se encuentre.
         """
         try:
+            cpu=self.recursos.obtener_uso_cpu()
+            memoria=self.recursos.obtener_info_memoria()
             gestor=self.gestor
             cola_proceso_listo=gestor.getProcesosListos()
             cola_proceso_nuevo=gestor.getProcesosNuevos()
@@ -54,9 +56,13 @@ class Evento():
                 gestor.mover_proceso_listo(proceso)
                 cola_proceso_nuevo.desencolar()
             elif self.estado == "Listo":
-                self.setEstadoEjecucion()
-                gestor.mover_proceso_ejecucion(proceso)
-                cola_proceso_listo.desencolar()
+                if cpu<50 and memoria >4:
+                    self.setEstadoEjecucion()
+                    gestor.mover_proceso_ejecucion(proceso)
+                    cola_proceso_listo.desencolar()
+                else:
+                    self.setEstadoBlock()
+                    gestor.mover_proceso(proceso,"Bloqueados")
             elif self.estado == "Ejecucion":
                 self.setEstadoTerminado()
                 cola_proceso_ejecucion.desencolar()
