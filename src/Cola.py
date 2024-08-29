@@ -13,10 +13,9 @@ class Cola:
 
     def desencolar(self):
         if self.cola:
-            return self.cola.pop(0)  # Elimina y retorna el primer elemento de la cola
+            return self.cola.pop(0)  
         else:
             return None  
-
     def esta_vacia(self):
         return len(self.cola) == 0
     
