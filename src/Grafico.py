@@ -71,7 +71,7 @@ class Grafico(c):
             print("Imagen guardada como 'visualizacion_cola.png'.")
             
             # Mostrar la figura después de guardar
-            plt.show()
+            #plt.show()
 
         except Exception as e:
             print(f"Error al visualizar la Cola: {e}")  

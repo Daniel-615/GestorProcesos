@@ -19,13 +19,15 @@ class Proceso:
         "Lista de Tareas": "Tasklist"
     }
 
-    def __init__(self, prioridad, proceso, tipo_proceso,gestor):
+    def __init__(self, prioridad, proceso, tipo_proceso,gestor,tipo_planificacion):
         Proceso.contador += 1
         self.prioridad = prioridad
         self.proceso = proceso
         self.tipo_proceso = tipo_proceso
         self.numero_proceso = Proceso.contador
         self.comandos_permitidos=Proceso.comandos_permitidos
+        self.tipo_planificacion=tipo_planificacion
+        self.rafaga_cpu = self.calcular_tiempo_ejecucion()
         #Usando de manera adecuada
         self.evento=Evento(gestor)
         self.evento.setEstadoNuevo()
@@ -35,7 +37,13 @@ class Proceso:
         return self.proceso
     def getEvento(self):
         return self.evento
-    
+    #Método para Round Robin
+    def ha_fallado(self):
+        evento=self.evento
+        if evento.getEstado()=="Bloqueado":
+            return True
+        else:
+            return False
     def startProcess(self):
         """"Obtengo hora formateada.
         """
@@ -92,7 +100,7 @@ class Proceso:
            
             self.startProcess()
             # Calcula el tiempo de simulación basado en la prioridad
-            self.rafaga_cpu = self.calcular_tiempo_ejecucion()
+            
             print(f"Ejecutando proceso con prioridad {self.prioridad} tipo: ({self.tipo_proceso}) ")
             # Simula el tiempo de ejecución
             time.sleep(self.rafaga_cpu)
