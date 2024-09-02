@@ -1,9 +1,8 @@
 from Proceso import Proceso
 from Grafico import Grafico
-
 import os
 
-from planificacion import FIFO, RoundRobin
+from planificacion import FIFO, RoundRobin,SJF
 class GestorProcesos:
     def __init__(self):
         self.cola_procesos = Grafico()
@@ -48,7 +47,19 @@ class GestorProcesos:
         if not self.cola_procesos_bloqueados.esta_vacia():
             proceso = self.cola_procesos_bloqueados.desencolar()
             self.mover_proceso_listo(proceso)
-    
+    def getColaProcesos(self, decision):
+        if decision == 1:
+            return self.getProcesosNuevos()
+        elif decision == 2:
+            return self.getProcesosListos()
+        elif decision == 3:
+            return self.getProcesosEjecucion()
+        elif decision == 4:
+            return self.getProcesos()
+            
+        else:
+            print("Decisión no válida, por favor selecciona un número entre 1 y 4.")
+            return None
     # FIFO
     def ejecutar_fifo(self, cores):
         fifo_planificador = FIFO.Fifo(
@@ -66,7 +77,13 @@ class GestorProcesos:
             gestor=self
         )
         robin_planificador.ejecutar_procesos()
-
+    def ejecutar_sjf(self):
+        sjf_planificador=SJF.SJF(
+            c_p=self.cola_procesos,
+            c_p_b=self.cola_procesos_bloqueados,
+            gestor=self
+        )
+        sjf_planificador.ejecutar_procesos()
     def consulta_cores(self):
         self.cores = os.cpu_count()
         print(f"Tienes {self.cores} cores disponibles.")
@@ -131,7 +148,7 @@ def main():
                 if planificacion=="robin":
                     gestor.ejecutar_robin()
                 if planificacion=="sjf":
-                    pass
+                    gestor.ejecutar_sjf()
                 if planificacion=="priority":
                     pass 
                 try:

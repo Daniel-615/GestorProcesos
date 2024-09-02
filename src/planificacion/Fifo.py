@@ -1,5 +1,4 @@
 import concurrent.futures
-
 class Fifo:
     def __init__(self, c_p, c_p_b, max_cores, gestor):
         self.cola_procesos = c_p
@@ -16,6 +15,9 @@ class Fifo:
             procesos_completados = []
 
             while not self.cola_procesos.esta_vacia() or not self.cola_procesos_bloqueados.esta_vacia():
+                # Intentar desbloquear procesos antes de procesar la siguiente cola
+                self._intentar_desbloquear_procesos()
+
                 proceso = (self.cola_procesos_bloqueados.desencolar() 
                            if not self.cola_procesos_bloqueados.esta_vacia() 
                            else self.cola_procesos.desencolar())
@@ -29,6 +31,22 @@ class Fifo:
             self._completar_futuros(futuros, procesos_completados)
 
         return procesos_completados
+
+    def _intentar_desbloquear_procesos(self):
+        """Intenta desbloquear todos los procesos en la cola de bloqueados."""
+        procesos_a_reinsertar = []
+
+        while not self.cola_procesos_bloqueados.esta_vacia():
+            proceso = self.cola_procesos_bloqueados.desencolar()
+            evento = proceso.getEvento()
+
+            if evento.intentar_desbloquear():
+                procesos_a_reinsertar.append(proceso)
+            else:
+                self.cola_procesos_bloqueados.encolar(proceso)
+
+        for proceso in procesos_a_reinsertar:
+            self.cola_procesos.encolar(proceso)
 
     def _manejar_proceso_nuevo(self, proceso, evento, executor, futuros):
         """Maneja el proceso en estado 'Nuevo', moviéndolo a través de los estados correspondientes."""

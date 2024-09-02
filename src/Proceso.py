@@ -12,11 +12,11 @@ class Proceso:
 
     # Lista de comandos permitidos
     comandos_permitidos = {
-        "ls": "ls -la",
-        "dir": "dir",
-        "ping": "ping -c 4 google.com",
-        "Info del Sistema":"Systeminfo",
-        "Lista de Tareas": "Tasklist"
+        "0": "ls -la",
+        "1": "dir",
+        "2": "ping -c 4 google.com",
+        "3":"Systeminfo",
+        "4": "Tasklist"
     }
 
     def __init__(self, prioridad, proceso, tipo_proceso,gestor,tipo_planificacion):

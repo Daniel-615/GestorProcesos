@@ -34,13 +34,22 @@ class Evento():
         self.estado = "Terminado"
     
     def setEstadoEjecucion(self):
+        """Cambia estado a ejecución, dependiendo el nivel de recursos disponibles que tenga.
+        """
         cpu = self.recursos.obtener_uso_cpu()
         memoria = self.recursos.obtener_info_memoria()
         if cpu < 50 and memoria > 4: 
             self.estado = "Ejecucion"
         else:
             self.setEstadoBlock()
-    
+    def intentar_desbloquear(self):
+        """Revisa si el proceso bloqueado puede ser desbloqueado."""
+        cpu = self.recursos.obtener_uso_cpu()
+        memoria = self.recursos.obtener_info_memoria()
+        if cpu < 80 and memoria > 2:
+            self.setEstadoListo()
+            return True
+        return False
     def avanzarEstado(self,proceso):
         """Avanza el estado, encola y desencola dependiendo el estado en que se encuentre.
         """
@@ -51,19 +60,19 @@ class Evento():
             cola_proceso_listo=gestor.getProcesosListos()
             cola_proceso_nuevo=gestor.getProcesosNuevos()
             cola_proceso_ejecucion=gestor.getProcesosEjecucion()
-            if self.estado == "Nuevo":
+            if self.estado == "Nuevo" and not gestor.getColaProcesos(1).esta_vacia():
                 self.setEstadoListo()
                 gestor.mover_proceso_listo(proceso)
                 cola_proceso_nuevo.desencolar()
-            elif self.estado == "Listo":
+            elif self.estado == "Listo" and not gestor.getColaProcesos(2).esta_vacia():
                 if cpu<50 and memoria >4:
                     self.setEstadoEjecucion()
                     gestor.mover_proceso_ejecucion(proceso)
                     cola_proceso_listo.desencolar()
                 else:
                     self.setEstadoBlock()
-                    gestor.mover_proceso(proceso,"Bloqueados")
-            elif self.estado == "Ejecucion":
+                    gestor.mover_proceso_bloqueado(proceso)
+            elif self.estado == "Ejecucion" and not gestor.getColaProcesos(3).esta_vacia():
                 self.setEstadoTerminado()
                 cola_proceso_ejecucion.desencolar()
         except Exception as e:

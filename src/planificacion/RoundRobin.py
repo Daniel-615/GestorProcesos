@@ -1,5 +1,4 @@
 import concurrent.futures
-
 class RoundRobin:
     def __init__(self, c_p, c_p_b, gestor, quantum=2):
         self.cola_procesos = c_p
@@ -13,7 +12,6 @@ class RoundRobin:
         with concurrent.futures.ThreadPoolExecutor(max_workers=self.gestor.getCores()) as executor:
             futuros = []
             procesos_completados = []
-
             while not self.cola_procesos.esta_vacia() or not self.cola_procesos_bloqueados.esta_vacia():
                 proceso = (self.cola_procesos_bloqueados.desencolar() 
                            if not self.cola_procesos_bloqueados.esta_vacia() 
@@ -21,6 +19,13 @@ class RoundRobin:
 
                 if proceso:
                     evento = proceso.getEvento()
+
+                    # Intentar desbloquear el proceso si está bloqueado
+                    if evento.getEstado() == "Bloqueado":
+                        if evento.intentar_desbloquear():
+                            print(f"Proceso {proceso.getProceso()} desbloqueado y movido a Listo.")
+                            self.cola_procesos.encolar(proceso)
+                            continue
 
                     if evento.getEstado() == "Nuevo":
                         self._manejar_proceso_nuevo(proceso, evento, executor, futuros)
@@ -67,6 +72,7 @@ class RoundRobin:
         if proceso.ha_fallado():
             print(f"Proceso {proceso.getProceso()} ha fallado y se moverá a bloqueados.")
             self.gestor.mover_proceso_bloqueado(proceso)
+            self.cola_procesos_bloqueados.encolar(proceso)  # Reencolar en la cola de bloqueados
         elif evento.getEstado() == "Terminado":
             print(f"Proceso {proceso.getProceso()} ha terminado.")
         else:
