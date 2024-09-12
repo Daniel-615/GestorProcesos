@@ -1,18 +1,20 @@
-from Proceso import Proceso
 from Grafico import Grafico
 import os
 
-from planificacion import FIFO, RoundRobin,SJF
+from planificacion import FIFO, RoundRobin, SJF, PriorityScheduling as Prioridad  
 class GestorProcesos:
     def __init__(self):
-        self.cola_procesos = Grafico()
+        self.cola_fifo = Grafico()  
+        self.cola_rr = Grafico()  
+        self.cola_sjf = Grafico()   
+        self.cola_priority = Grafico()  
         self.cola_procesos_nuevos = Grafico()
         self.cola_procesos_listos = Grafico()  
         self.cola_procesos_ejecucion = Grafico()
         self.cola_procesos_bloqueados = Grafico()
         self.cores = None
 
-    # Métodos Get y Set    
+    # Métodos Get y Set
     def getCores(self):
         return self.cores
 
@@ -29,7 +31,17 @@ class GestorProcesos:
         return self.cola_procesos
 
     def agregar_proceso(self, proceso):
-        self.cola_procesos.encolar(proceso)
+        # Dependiendo del tipo de planificación, el proceso será agregado a su cola correspondiente
+        if proceso.tipo_planificacion== 'fifo':
+            self.cola_fifo.encolar(proceso)
+        elif proceso.tipo_planificacion == 'robin':
+            self.cola_rr.encolar(proceso)
+        elif proceso.tipo_planificacion == 'sjf':
+            self.cola_sjf.encolar(proceso)
+        elif proceso.tipo_planificacion == 'prioridad':
+            self.cola_priority.encolar(proceso)
+        else:
+            print("Tipo de planificación no válida.")
 
     def mover_proceso_nuevo(self, proceso):
         self.cola_procesos_nuevos.encolar(proceso)
@@ -47,6 +59,7 @@ class GestorProcesos:
         if not self.cola_procesos_bloqueados.esta_vacia():
             proceso = self.cola_procesos_bloqueados.desencolar()
             self.mover_proceso_listo(proceso)
+
     def getColaProcesos(self, decision):
         if decision == 1:
             return self.getProcesosNuevos()
@@ -56,34 +69,47 @@ class GestorProcesos:
             return self.getProcesosEjecucion()
         elif decision == 4:
             return self.getProcesos()
-            
         else:
             print("Decisión no válida, por favor selecciona un número entre 1 y 4.")
             return None
+
     # FIFO
     def ejecutar_fifo(self, cores):
         fifo_planificador = FIFO.Fifo(
-            c_p=self.cola_procesos,
+            c_p=self.cola_fifo, 
             c_p_b=self.cola_procesos_bloqueados,
             max_cores=cores,
             gestor=self
         )
         fifo_planificador.ejecutar_procesos()
-    #RoundRobin
+
+    # RoundRobin
     def ejecutar_robin(self):
-        robin_planificador=RoundRobin.RoundRobin(
-            c_p=self.cola_procesos,
+        robin_planificador = RoundRobin.RoundRobin(
+            c_p=self.cola_rr, 
             c_p_b=self.cola_procesos_bloqueados,
             gestor=self
         )
         robin_planificador.ejecutar_procesos()
+
+    # SJF
     def ejecutar_sjf(self):
-        sjf_planificador=SJF.SJF(
-            c_p=self.cola_procesos,
+        sjf_planificador = SJF.SJF(
+            c_p=self.cola_sjf, 
             c_p_b=self.cola_procesos_bloqueados,
             gestor=self
         )
         sjf_planificador.ejecutar_procesos()
+
+    # Prioridad
+    def ejecutar_prioridad(self):
+        prioridad_planificador = Prioridad.Prioridad(
+            c_p=self.cola_priority,  
+            c_p_b=self.cola_procesos_bloqueados,
+            gestor=self
+        )
+        prioridad_planificador.ejecutar_procesos()
+
     def consulta_cores(self):
         self.cores = os.cpu_count()
         print(f"Tienes {self.cores} cores disponibles.")
@@ -99,67 +125,12 @@ class GestorProcesos:
 
     def visualizar(self, num):
         if num == 1:
-            self.cola_procesos.visualizar_cola('visualizacion_cola')
+            self.cola_fifo.visualizar_cola('visualizacion_cola_fifo')
         elif num == 2:
-            self.cola_procesos_nuevos.visualizar_cola('cola_nuevos')
+            self.cola_rr.visualizar_cola('visualizacion_cola_rr')
         elif num == 3:
-            self.cola_procesos_listos.visualizar_cola('cola_listos')
+            self.cola_sjf.visualizar_cola('visualizacion_cola_sjf')
         elif num == 4:
-            self.cola_procesos_ejecucion.visualizar_cola('cola_ejecucion')
+            self.cola_priority.visualizar_cola('visualizacion_cola_prioridad')
         else:
             print("No has seleccionado una opción válida.")
-
-def main():
-    gestor = GestorProcesos()
-    cores = gestor.consulta_cores()
-
-    while True:
-        action = input("¿Deseas agregar un nuevo proceso o empezar la ejecución? (agregar/empezar): ").strip().lower()
-
-        if action == "agregar":
-            if gestor.cola_procesos.contador <= cores:
-                lista_comandos = Proceso.devolver_comandos()
-                print(f"Lista de Comandos:\n{lista_comandos}\n")
-                comando = input("¿Qué tipo de comando deseas ejecutar?: ")
-                prioridad = input("¿Tipo de prioridad? (baja/media/alta): ").strip().lower()
-                
-                if prioridad in ["baja", "media", "alta"]:
-                    planificacion = input("¿Tipo de Planificación? (FIFO/Robin/SJF/Priority): ").strip().lower()
-                    if planificacion in ["fifo", "robin", "sjf", "priority"]:
-                        proceso = Proceso(
-                            prioridad, 
-                            f"Proceso {gestor.cola_procesos.contador}", 
-                            comando, 
-                            gestor, 
-                            planificacion
-                        )
-                        gestor.agregar_proceso(proceso)
-                    else: 
-                        print("Error: La planificación ingresada no es válida.")
-                else: 
-                    print("Error: La prioridad ingresada no es válida.")
-            else:
-                print(f"Has alcanzado el número máximo de procesos asignados a {cores} cores.")
-        elif action == "empezar":
-            if gestor.cola_procesos.contador > 0:
-                gestor.visualizar(1)
-                if planificacion=="fifo":
-                    gestor.ejecutar_fifo(cores)
-                if planificacion=="robin":
-                    gestor.ejecutar_robin()
-                if planificacion=="sjf":
-                    gestor.ejecutar_sjf()
-                if planificacion=="priority":
-                    pass 
-                try:
-                    num_decision = int(input("¿Deseas ver alguna cola? (Cola nuevos (2)/ Cola listos (3)/ Cola en ejecución (4)): "))
-                    gestor.visualizar(num_decision)
-                except ValueError:
-                    print("Entrada no válida. Debes ingresar un número.")
-            else:
-                print("No hay procesos en la cola. Agrega al menos un proceso antes de empezar.")
-        else:
-            print("Opción no válida, por favor ingresa 'agregar' o 'empezar'.")
-
-if __name__ == "__main__":
-    main()

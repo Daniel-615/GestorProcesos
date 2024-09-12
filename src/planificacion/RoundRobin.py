@@ -52,8 +52,10 @@ class RoundRobin:
             print(f"Ejecutando {proceso.getProceso()} por {self.quantum} segundos.")
             proceso.ejecutar_comando()
             proceso.rafaga_cpu -= self.quantum
-            self.cola_procesos.encolar(proceso)
-            print(f"Proceso {proceso.getProceso()} reencolado con {proceso.rafaga_cpu:.2f} segundos restantes.")
+            if proceso.rafaga_cpu>0:    
+                self.cola_procesos.encolar(proceso)
+                print(f"Proceso {proceso.getProceso()} reencolado con {proceso.rafaga_cpu:.2f} segundos restantes.")
+
         else:
             print(f"Ejecutando {proceso.getProceso()} por {proceso.rafaga_cpu:.2f} segundos.")
             proceso.ejecutar_comando()
@@ -72,7 +74,7 @@ class RoundRobin:
         if proceso.ha_fallado():
             print(f"Proceso {proceso.getProceso()} ha fallado y se moverá a bloqueados.")
             self.gestor.mover_proceso_bloqueado(proceso)
-            self.cola_procesos_bloqueados.encolar(proceso)  # Reencolar en la cola de bloqueados
+            self.cola_procesos_bloqueados.encolar(proceso)  
         elif evento.getEstado() == "Terminado":
             print(f"Proceso {proceso.getProceso()} ha terminado.")
         else:
