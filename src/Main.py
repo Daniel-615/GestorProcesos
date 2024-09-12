@@ -61,34 +61,42 @@ def ejecutar_procesos_por_tipo(gestor, cores):
     # Ejecutar los procesos de acuerdo a su tipo de planificación
     if not gestor.cola_fifo.esta_vacia():
         print("Ejecutando procesos FIFO...")
+        gestor.visualizar(1)
         gestor.ejecutar_fifo(cores)
+        
 
     if not gestor.cola_rr.esta_vacia():
         print("Ejecutando procesos Round Robin...")
+        gestor.visualizar(2)
         gestor.ejecutar_robin()
-
+        
     if not gestor.cola_sjf.esta_vacia():
         print("Ejecutando procesos SJF...")
+        gestor.visualizar(3)
         gestor.ejecutar_sjf()
-
+        
     if not gestor.cola_priority.esta_vacia():
         print("Ejecutando procesos por prioridad...")
+        gestor.visualizar(4)
         gestor.ejecutar_priority()
 
 def main():
     gestor = GestorProcesos()
     cores = gestor.consulta_cores()  
-    n = 1 
+    n = 1  
     while True:
-        action = input("¿Deseas agregar un nuevo proceso o empezar la ejecución? (agregar/empezar): ").strip().lower()
+        action = input("¿Deseas agregar un nuevo proceso o empezar la ejecución? (agregar/empezar/salir): ").strip().lower()
 
         if action == "agregar":
             agregar_proceso(gestor, cores, n)
             n += 1  
         elif action == "empezar":
             ejecutar_procesos_por_tipo(gestor, cores)
+        elif action == "salir":
+            print("Saliendo del programa.")
+            break
         else:
-            print("Opción no válida, por favor ingresa 'agregar' o 'empezar'.")
+            print("Opción no válida, por favor ingresa 'agregar', 'empezar' o 'salir'.")
 
 if __name__ == "__main__":
     main()

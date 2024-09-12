@@ -50,6 +50,19 @@ class Evento():
             self.setEstadoListo()
             return True
         return False
+    def visualizarColaEvento(self,gestor):
+        answer=input(f"Deseas visualizar la cola {self.getEstado()}?")
+        if answer == "SI":
+            if self.getEstado() == "Nuevo":
+                gestor.visualizar(5)
+            elif self.getEstado() == "Listo":
+                gestor.visualizar(6)
+            elif self.getEstado() == "Ejecucion":
+                gestor.visualizar(7)
+            elif self.getEstado() == "Bloqueado":
+                gestor.visualizar(8)
+        else:
+            return 
     def avanzarEstado(self,proceso):
         """Avanza el estado, encola y desencola dependiendo el estado en que se encuentre.
         """
@@ -63,11 +76,13 @@ class Evento():
             if self.estado == "Nuevo" and not gestor.getColaProcesos(1).esta_vacia():
                 self.setEstadoListo()
                 gestor.mover_proceso_listo(proceso)
+                self.visualizarColaEvento(gestor)
                 cola_proceso_nuevo.desencolar()
             elif self.estado == "Listo" and not gestor.getColaProcesos(2).esta_vacia():
                 if cpu<50 and memoria >4:
                     self.setEstadoEjecucion()
                     gestor.mover_proceso_ejecucion(proceso)
+                    self.visualizarColaEvento(gestor)
                     cola_proceso_listo.desencolar()
                 else:
                     self.setEstadoBlock()

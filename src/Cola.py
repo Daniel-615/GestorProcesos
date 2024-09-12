@@ -28,12 +28,7 @@ class Cola:
         return self.cola
 
     def ordenar_por_rafaga(self):
-        """Ordena solo los procesos que tienen tipo_planificacion igual a 'SJF' por tiempo de ráfaga en orden ascendente."""
-        sjf_procesos = [p for p in self.cola if p.tipo_planificacion == 'SJF']
-        no_sjf_procesos = [p for p in self.cola if p.tipo_planificacion != 'SJF']
-
-        # Ordenar solo los procesos SJF
-        sjf_procesos.sort(key=lambda proceso: proceso.rafaga_cpu)
-
-        # Actualizar la cola combinando los procesos no SJF y los SJF ordenados
-        self.cola = no_sjf_procesos + sjf_procesos
+        """Ordena los procesos en la cola por la duración de ráfaga (SJF)."""
+        procesos = self.obtener_procesos()
+        procesos.sort(key=lambda p: p.rafaga_cpu)
+        self.procesos = procesos  

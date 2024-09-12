@@ -9,7 +9,7 @@ load_dotenv()
 class Grafico(c): 
     def __init__(self):       
         super().__init__()
-        self.contador=c.getContador() 
+        self.contador = c.getContador() 
     
     def encolar(self, proceso):  
         super().encolar(proceso)
@@ -32,7 +32,16 @@ class Grafico(c):
             return 0.5
         return 0.5
     
-    def visualizar_cola(self,file): 
+    def prioridad_to_color(self, prioridad):
+        if prioridad == "alta":
+            return 'red'
+        elif prioridad == "media":
+            return 'orange'
+        elif prioridad == "baja":
+            return 'green'
+        return 'gray'
+    
+    def visualizar_cola(self, file): 
         try:
             fig, ax = plt.subplots(figsize=(12, 8))  
 
@@ -42,17 +51,18 @@ class Grafico(c):
                 if procesos:
                     anchos = [self.prioridad_to_width(p.prioridad) for p in procesos]
                     nombres_prioridades = [f"{p.proceso} ({p.prioridad.capitalize()})" for p in procesos]
+                    colores = [self.prioridad_to_color(p.prioridad) for p in procesos]
                     
-                    bars = ax.barh(range(len(procesos)), anchos, tick_label=nombres_prioridades)
+                    bars = ax.barh(range(len(procesos)), anchos, tick_label=nombres_prioridades, color=colores)
                     
                     for bar, prioridad in zip(bars, [p.prioridad for p in procesos]):
                         ax.text(bar.get_width() + 0.1, bar.get_y() + bar.get_height()/2,
                                 f' {prioridad.capitalize()}', va='center')
 
                     handles = [
-                        plt.Line2D([0], [0], color='C0', lw=4, label='Alta'),
-                        plt.Line2D([0], [0], color='C1', lw=4, label='Media'),
-                        plt.Line2D([0], [0], color='C2', lw=4, label='Baja')
+                        plt.Line2D([0], [0], color='red', lw=4, label='Alta'),
+                        plt.Line2D([0], [0], color='orange', lw=4, label='Media'),
+                        plt.Line2D([0], [0], color='green', lw=4, label='Baja')
                     ]
                     ax.legend(handles=handles, title='Prioridad')
 
@@ -62,13 +72,13 @@ class Grafico(c):
 
             anim = FuncAnimation(fig, actualizar, frames=10, interval=1000)
             
-            #Dibuja la figura antes de guardar
+            # Dibuja la figura antes de guardar
             fig.canvas.draw()
             
             # Guardar la imagen
             ruta = os.getenv("REPORTS_PATH")
             plt.savefig(f'{ruta}{file}.png', format='png')  
-            print("Imagen guardada como 'visualizacion_cola.png'.")
+            print(f"Imagen guardada como '{file}.png'.")
             
             # Mostrar la figura después de guardar
             #plt.show()

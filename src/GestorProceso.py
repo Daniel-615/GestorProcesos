@@ -29,7 +29,7 @@ class GestorProcesos:
 
     def getProcesos(self):
         return self.cola_procesos
-
+    
     def agregar_proceso(self, proceso):
         # Dependiendo del tipo de planificación, el proceso será agregado a su cola correspondiente
         if proceso.tipo_planificacion== 'fifo':
@@ -132,5 +132,13 @@ class GestorProcesos:
             self.cola_sjf.visualizar_cola('visualizacion_cola_sjf')
         elif num == 4:
             self.cola_priority.visualizar_cola('visualizacion_cola_prioridad')
+        elif num==5:
+            self.cola_procesos_nuevos.visualizar_cola('visualizacion_cola_nuevos')
+        elif num==6:
+            self.cola_procesos_listos.visualizar_cola('visualizacion_cola_listos')
+        elif num==7:
+            self.cola_procesos_ejecucion.visualizar_cola('visualizacion_cola_ejecucion')
+        elif num==8:
+            self.cola_procesos_bloqueados.visualizar_cola('visualizacion_cola_bloqueados')
         else:
             print("No has seleccionado una opción válida.")
