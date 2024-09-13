@@ -38,7 +38,7 @@ class GestorProcesos:
             self.cola_rr.encolar(proceso)
         elif proceso.tipo_planificacion == 'sjf':
             self.cola_sjf.encolar(proceso)
-        elif proceso.tipo_planificacion == 'prioridad':
+        elif proceso.tipo_planificacion == 'priority':
             self.cola_priority.encolar(proceso)
         else:
             print("Tipo de planificación no válida.")
@@ -102,8 +102,8 @@ class GestorProcesos:
         sjf_planificador.ejecutar_procesos()
 
     # Prioridad
-    def ejecutar_prioridad(self):
-        prioridad_planificador = Prioridad.Prioridad(
+    def ejecutar_priority(self):
+        prioridad_planificador = Prioridad.PriorityScheduling(
             c_p=self.cola_priority,  
             c_p_b=self.cola_procesos_bloqueados,
             gestor=self

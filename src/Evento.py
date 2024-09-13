@@ -1,5 +1,5 @@
 from Recursos import Recursos
-
+from Json import Json
 class Evento():
     contador = 0
 
@@ -51,18 +51,26 @@ class Evento():
             return True
         return False
     def visualizarColaEvento(self,gestor):
-        answer=input(f"Deseas visualizar la cola {self.getEstado()}?")
-        if answer == "SI":
-            if self.getEstado() == "Nuevo":
-                gestor.visualizar(5)
-            elif self.getEstado() == "Listo":
-                gestor.visualizar(6)
-            elif self.getEstado() == "Ejecucion":
-                gestor.visualizar(7)
-            elif self.getEstado() == "Bloqueado":
-                gestor.visualizar(8)
-        else:
-            return 
+        json_config=Json()
+        try:
+            json_config.cargar_configuracion()
+            
+            if json_config.getColas() == True:
+                if self.getEstado() == "Nuevo":
+                    gestor.visualizar(5)
+                elif self.getEstado() == "Listo":
+                    gestor.visualizar(6)
+                elif self.getEstado() == "Ejecucion":
+                    gestor.visualizar(7)
+                elif self.getEstado() == "Bloqueado":
+                    gestor.visualizar(8)
+            else:
+                return 
+        except Exception as e:
+            raise ValueError(e)
+        
+        
+        
     def avanzarEstado(self,proceso):
         """Avanza el estado, encola y desencola dependiendo el estado en que se encuentre.
         """

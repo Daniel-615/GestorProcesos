@@ -76,7 +76,7 @@ class Grafico(c):
             fig.canvas.draw()
             
             # Guardar la imagen
-            ruta = os.getenv("REPORTS_PATH")
+            ruta = os.getenv("REPORTS_PATH_IMG")
             plt.savefig(f'{ruta}{file}.png', format='png')  
             print(f"Imagen guardada como '{file}.png'.")
             

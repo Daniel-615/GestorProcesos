@@ -71,7 +71,7 @@ class Proceso:
             else:
                 salida = resultado.stderr
 
-            ruta = os.getenv("REPORTS_PATH")
+            ruta = os.getenv("REPORTS_PATH_DOC")
             nombre = f"{ruta}resultado{self.numero_proceso}.docx"
             documento = Document()
             documento.add_heading("Resultado del Proceso", 0)

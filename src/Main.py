@@ -1,6 +1,6 @@
 from Proceso import Proceso
 from GestorProceso import GestorProcesos
-
+from Json import Json
 def agregar_proceso(gestor, cores, n):
     """Función para agregar un nuevo proceso a la cola."""
     
@@ -22,23 +22,26 @@ def agregar_proceso(gestor, cores, n):
     comando = input("¿Qué tipo de comando deseas ejecutar?: ").strip()
     prioridad = input("¿Tipo de prioridad? (baja/media/alta): ").strip().lower()
     
-    if prioridad not in ["baja", "media", "alta"]:
-        print("Error: La prioridad ingresada no es válida.")
-        return
+    try:
+        if prioridad not in ["baja", "media", "alta"]:
+            print("Error: La prioridad ingresada no es válida.")
+            return
 
-    planificacion = input("¿Tipo de Planificación? (FIFO/Robin/SJF/Priority): ").strip().lower()
-    if planificacion not in ["fifo", "robin", "sjf", "priority"]:
-        print("Error: La planificación ingresada no es válida.")
-        return
+        planificacion = input("¿Tipo de Planificación? (FIFO/Robin/SJF/Priority): ").strip().lower()
+        if planificacion not in ["fifo", "robin", "sjf", "priority"]:
+            print("Error: La planificación ingresada no es válida.")
+            return
 
-    # Crear el nuevo proceso con los datos proporcionados
-    proceso = Proceso(
-        prioridad=prioridad, 
-        proceso=f"Proceso {n}", 
-        tipo_proceso=comando, 
-        gestor=gestor, 
-        tipo_planificacion=planificacion
-    )
+        # Crear el nuevo proceso con los datos proporcionados
+        proceso = Proceso(
+            prioridad=prioridad, 
+            proceso=f"Proceso {n}", 
+            tipo_proceso=comando, 
+            gestor=gestor, 
+            tipo_planificacion=planificacion
+        )
+    except Exception as e:
+        print(f"Error {e}")
     
     # Agregar el proceso a la cola correspondiente
     gestor.agregar_proceso(proceso)
@@ -60,30 +63,55 @@ def ejecutar_procesos_por_tipo(gestor, cores):
 
     # Ejecutar los procesos de acuerdo a su tipo de planificación
     if not gestor.cola_fifo.esta_vacia():
-        print("Ejecutando procesos FIFO...")
-        gestor.visualizar(1)
-        gestor.ejecutar_fifo(cores)
+        try:
+            print("Ejecutando procesos FIFO...")
+            gestor.visualizar(1)
+            gestor.ejecutar_fifo(cores)
+        except Exception as e:
+            print(f"Error: {e}")
+            raise ValueError(e)
+            
         
 
     if not gestor.cola_rr.esta_vacia():
-        print("Ejecutando procesos Round Robin...")
-        gestor.visualizar(2)
-        gestor.ejecutar_robin()
+        try:
+            print("Ejecutando procesos Round Robin...")
+            gestor.visualizar(2)
+            gestor.ejecutar_robin()
+        except Exception as e:
+            print(f"Error: {e}")
+            raise ValueError(e)
         
     if not gestor.cola_sjf.esta_vacia():
-        print("Ejecutando procesos SJF...")
-        gestor.visualizar(3)
-        gestor.ejecutar_sjf()
+        try:
+            print("Ejecutando procesos SJF...")
+            gestor.visualizar(3)
+            gestor.ejecutar_sjf()
+        except Exception as e:
+            print(f"Error: {e}")
+            raise ValueError(e)
         
     if not gestor.cola_priority.esta_vacia():
-        print("Ejecutando procesos por prioridad...")
-        gestor.visualizar(4)
-        gestor.ejecutar_priority()
+        try:
+            print("Ejecutando procesos por prioridad...")
+            gestor.visualizar(4)
+            gestor.ejecutar_priority()
+        except Exception as e:
+            print(f"Error: {e}")
+            raise ValueError(e)
 
 def main():
     gestor = GestorProcesos()
+    json_config=Json()
     cores = gestor.consulta_cores()  
     n = 1  
+    answer_colas=input("Deseas Mostrar las Colas por cada Evento (SI/NO)?").strip().lower()
+    answer_dc=input("Deseas que se te envíe los reportes por medio de Discord? (SI/NO):").strip().lower()
+    if answer_colas=="SI":
+        json_config.setColas(True)
+    if answer_dc=="SI":
+        json_config.setDc(True)
+    json_config.crear_json_configuracion()
     while True:
         action = input("¿Deseas agregar un nuevo proceso o empezar la ejecución? (agregar/empezar/salir): ").strip().lower()
 
