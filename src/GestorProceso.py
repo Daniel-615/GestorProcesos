@@ -125,20 +125,20 @@ class GestorProcesos:
 
     def visualizar(self, num):
         if num == 1:
-            self.cola_fifo.visualizar_cola('visualizacion_cola_fifo')
+            self.cola_fifo.visualizar_cola('visualizacion_cola_fifo','FIFO')
         elif num == 2:
-            self.cola_rr.visualizar_cola('visualizacion_cola_rr')
+            self.cola_rr.visualizar_cola('visualizacion_cola_rr','ROUND ROBIN')
         elif num == 3:
-            self.cola_sjf.visualizar_cola('visualizacion_cola_sjf')
+            self.cola_sjf.visualizar_cola('visualizacion_cola_sjf','SJF')
         elif num == 4:
-            self.cola_priority.visualizar_cola('visualizacion_cola_prioridad')
+            self.cola_priority.visualizar_cola('visualizacion_cola_prioridad','PRIORIDAD')
         elif num==5:
-            self.cola_procesos_nuevos.visualizar_cola('visualizacion_cola_nuevos')
+            self.cola_procesos_nuevos.visualizar_cola('visualizacion_cola_nuevos','NUEVOS')
         elif num==6:
-            self.cola_procesos_listos.visualizar_cola('visualizacion_cola_listos')
+            self.cola_procesos_listos.visualizar_cola('visualizacion_cola_listos','LISTOS')
         elif num==7:
-            self.cola_procesos_ejecucion.visualizar_cola('visualizacion_cola_ejecucion')
+            self.cola_procesos_ejecucion.visualizar_cola('visualizacion_cola_ejecucion','EJECUCION')
         elif num==8:
-            self.cola_procesos_bloqueados.visualizar_cola('visualizacion_cola_bloqueados')
+            self.cola_procesos_bloqueados.visualizar_cola('visualizacion_cola_bloqueados','BLOQUEADOS')
         else:
             print("No has seleccionado una opción válida.")

@@ -1,8 +1,8 @@
 import os
 from dotenv import load_dotenv
 from docx2pdf import convert
-
 from PIL import Image
+from PyPDF2 import PdfMerger
 
 load_dotenv()
 
@@ -36,7 +36,7 @@ class Reportes:
             return None
 
     def convertir_imagenes_a_pdf(self, output_pdf):
-        """Convierte todas las imágenes en un directorio a un único archivo PDF."""
+        """Convierte todas las imágenes en un directorio a un único archivo PDF y lo concatena si ya existe."""
         DIRECTORIO_IMAGENES = os.getenv('REPORTS_PATH_IMG')
         RUTA_SALIDA_PDF = os.getenv('REPORTS_PATH_PDF')
 
@@ -50,7 +50,7 @@ class Reportes:
 
         archivos = os.listdir(DIRECTORIO_IMAGENES)
         imagenes = []
-        rutas_imagenes = []  
+        rutas_imagenes = []
 
         # Filtrar solo archivos de imagen
         for archivo in archivos:
@@ -68,21 +68,41 @@ class Reportes:
             print("No se encontraron imágenes válidas para convertir.")
             return None
 
-        output_pdf_path = os.path.join(RUTA_SALIDA_PDF, f"{output_pdf}.pdf")
-        
-        try:
-            # Guardar el PDF a partir de las imágenes
-            imagenes[0].save(output_pdf_path, save_all=True, append_images=imagenes[1:])
-            print(f"Imágenes convertidas y guardadas en: {output_pdf_path}")
+        nuevo_pdf_path = os.path.join(RUTA_SALIDA_PDF, f"{output_pdf}_nuevo.pdf")
 
-         
+        try:
+            # Guardar el nuevo PDF a partir de las imágenes
+            imagenes[0].save(nuevo_pdf_path, save_all=True, append_images=imagenes[1:])
+            print(f"Imágenes convertidas y guardadas en: {nuevo_pdf_path}")
+
+            # Concatenar con el PDF existente si ya existe
+            archivo_pdf_existente = os.path.join(RUTA_SALIDA_PDF, f"{output_pdf}.pdf")
+            if os.path.exists(archivo_pdf_existente):
+                merger = PdfMerger()
+                merger.append(archivo_pdf_existente)
+                merger.append(nuevo_pdf_path)
+
+                output_pdf_path = os.path.join(RUTA_SALIDA_PDF, f"{output_pdf}.pdf")
+                with open(output_pdf_path, 'wb') as salida:
+                    merger.write(salida)
+                merger.close()
+
+                # Eliminar el PDF nuevo
+                os.remove(nuevo_pdf_path)
+                print(f"Archivos concatenados y guardados en: {output_pdf_path}")
+            else:
+                # Renombrar el nuevo PDF si no existe previamente
+                os.rename(nuevo_pdf_path, archivo_pdf_existente)
+                print(f"Nuevo PDF guardado en: {archivo_pdf_existente}")
+
+            # Eliminar imágenes
             for file_path in rutas_imagenes:
                 try:
                     os.remove(file_path)
                 except Exception as e:
                     print(f"Error al eliminar la imagen {file_path}: {e}")
 
-            return output_pdf_path
+            return archivo_pdf_existente
         except Exception as e:
             print(f"Error al convertir imágenes a PDF: {e}")
             return None

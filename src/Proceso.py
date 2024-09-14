@@ -6,6 +6,7 @@ import os
 from dotenv import load_dotenv
 from Evento import Evento
 from reportes.Reportes import Reportes
+
 load_dotenv()
 
 class Proceso:
@@ -16,46 +17,45 @@ class Proceso:
         "0": "ls -la",
         "1": "dir",
         "2": "ping -c 4 google.com",
-        "3":"Systeminfo",
+        "3": "Systeminfo",
         "4": "Tasklist"
     }
 
-    def __init__(self, prioridad, proceso, tipo_proceso,gestor,tipo_planificacion):
+    def __init__(self, prioridad, proceso, tipo_proceso, gestor, tipo_planificacion):
         Proceso.contador += 1
         self.prioridad = prioridad
         self.proceso = proceso
         self.tipo_proceso = tipo_proceso
         self.numero_proceso = Proceso.contador
-        self.comandos_permitidos=Proceso.comandos_permitidos
-        self.tipo_planificacion=tipo_planificacion
+        self.comandos_permitidos = Proceso.comandos_permitidos
+        self.tipo_planificacion = tipo_planificacion
         self.rafaga_cpu = self.calcular_tiempo_ejecucion()
-        #Usando de manera adecuada
-        self.evento=Evento(gestor)
+        # Usando de manera adecuada
+        self.evento = Evento(gestor)
         self.evento.setEstadoNuevo()
     
-    #Obtengo el evento para ser usado en GestorProceso
+    # Obtener el evento para ser usado en GestorProceso
     def getProceso(self):
         return self.proceso
+    
     def getEvento(self):
         return self.evento
-    #Método para Round Robin
+
+    # Método para Round Robin
     def ha_fallado(self):
-        evento=self.evento
-        if evento.getEstado()=="Bloqueado":
-            return True
-        else:
-            return False
+        evento = self.evento
+        return evento.getEstado() == "Bloqueado"
+
     def startProcess(self):
-        """"Obtengo hora formateada.
-        """
-        self.tiempo_llegada=time.time()
+        """Obtengo hora formateada."""
+        self.tiempo_llegada = time.time()
         self.tiempo_llegada = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(self.tiempo_llegada))
 
-    #Acceder al método sin una instancia
     @classmethod
-    def devolver_comandos(self):
-        return self.comandos_permitidos
-    def crear_docx(self,nombre,salida):
+    def devolver_comandos(cls):
+        return cls.comandos_permitidos
+
+    def crear_docx(self, nombre, salida):
         try:
             documento = Document()
             documento.add_heading("Resultado del Proceso", 0)
@@ -63,20 +63,23 @@ class Proceso:
             documento.save(nombre)
         except Exception as e:
             print(f"Error {e}")
-    def convertir_pdf(self,file):
-        reportes=Reportes()
+
+    def convertir_pdf(self, file):
+        reportes = Reportes()
         try:
-            output_pdf=reportes.convertir_docx_a_pdf(file)
-            #TODO: agregarle las imagenes para concatenar
-            file="graficos"
-            reportes.convertir_imagenes_a_pdf(file)
-            print(f"{file} convertido a pdf con éxito.")
+            # Convertir el archivo DOCX a PDF
+            output_pdf = reportes.convertir_docx_a_pdf(file)
+
+            # Asegurarse de que las imágenes también se conviertan a PDF
+            nombre_pdf_imagenes = "graficos"
+            reportes.convertir_imagenes_a_pdf(nombre_pdf_imagenes)
+
+            print(f"Archivos {file} y {nombre_pdf_imagenes} convertidos a PDF con éxito.")
         except Exception as e:
-            print(f"Error {e}")
-    
+            print(f"Error al convertir los archivos a PDF: {e}")
+
     def ejecutar_comando(self):
-        """Corre un proceso de una lista, hace un reporte acorde a los resultados.
-        """
+        """Corre un proceso de una lista, hace un reporte acorde a los resultados."""
         try:
             # Verificar si el tipo_proceso está en la lista de comandos permitidos
             if self.tipo_proceso in Proceso.comandos_permitidos:
@@ -85,44 +88,39 @@ class Proceso:
                 raise ValueError(f"Comando no permitido: {self.tipo_proceso}")
 
             resultado = subprocess.run(comando, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
-            if resultado.returncode == 0:
-                salida = resultado.stdout
-            else:
-                salida = resultado.stderr
+            salida = resultado.stdout if resultado.returncode == 0 else resultado.stderr
 
             ruta = os.getenv("REPORTS_PATH_DOC")
             nombre = f"{ruta}resultado{self.numero_proceso}.docx"
-            self.crear_docx(nombre,salida)
-            #TODO: Agregar aquí la llamada al pdf para convertirlo.
+            self.crear_docx(nombre, salida)
+
+            # Convertir el DOCX y las imágenes a PDF
             self.convertir_pdf(file=nombre)
-            print("Documento guardado con éxito.")
+
+            print("Documento y PDFs creados con éxito.")
         except Exception as e:
             print(f"Error al ejecutar el comando: {e}")
 
     def calcular_tiempo_ejecucion(self):
-        """Simula el tiempo de ejecución acorde a la prioridad.
-        """
+        """Simula el tiempo de ejecución acorde a la prioridad."""
         if self.prioridad == "alta":
-            tiempo = random.uniform(1, 3)
+            return random.uniform(1, 3)
         elif self.prioridad == "media":
-            tiempo = random.uniform(3, 6)
+            return random.uniform(3, 6)
         elif self.prioridad == "baja":
-            tiempo = random.uniform(6, 10)
-        else:
-            tiempo = 5  
-        return tiempo
-    
+            return random.uniform(6, 10)
+        return 5  # Default
+
     def ejecutar(self):
         """Ejecuta y pasa filtros acorde a los eventos."""
         try:
-           
             self.startProcess()
-            # Calcula el tiempo de simulación basado en la prioridad
+            print(f"Ejecutando proceso con prioridad {self.prioridad}, tipo: ({self.tipo_proceso})")
             
-            print(f"Ejecutando proceso con prioridad {self.prioridad} tipo: ({self.tipo_proceso}) ")
             # Simula el tiempo de ejecución
             time.sleep(self.rafaga_cpu)
+
             print(f"Tiempo estimado del proceso {self.proceso}: {self.rafaga_cpu:.2f} segundos")
-            print(f"Momento en que se inicio: {self.tiempo_llegada}")
+            print(f"Momento en que se inició: {self.tiempo_llegada}")
         except Exception as e:
             print(f"Error al ejecutar el proceso: {e}")

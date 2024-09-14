@@ -117,7 +117,7 @@ def main():
         json_config.setDc(True)
     json_config.crear_json_configuracion()
     while True:
-        action = input("¿Deseas agregar un nuevo proceso o empezar la ejecución? (agregar/empezar/salir): ").strip().lower()
+        action = input("¿Deseas agregar un nuevo proceso o empezar la ejecución? (agregar/empezar/salir/bot): ").strip().lower()
 
         if action == "agregar":
             agregar_proceso(gestor, cores, n)

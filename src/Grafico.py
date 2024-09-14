@@ -41,7 +41,7 @@ class Grafico(c):
             return 'green'
         return 'gray'
    
-    def visualizar_cola(self, file): 
+    def visualizar_cola(self, file,title): 
         try:
             fig, ax = plt.subplots(figsize=(12, 8))  
 
@@ -67,8 +67,8 @@ class Grafico(c):
                     ax.legend(handles=handles, title='Prioridad')
 
                     ax.set_xlim(0, max(anchos) * 1.5)
-                    ax.set_xlabel('Ancho basado en Prioridad')
-                    ax.set_title('Visualización de la Cola') 
+                    #ax.set_xlabel('Ancho basado en Prioridad')
+                    ax.set_title(title) 
 
             anim = FuncAnimation(fig, actualizar, frames=10, interval=1000)
             
@@ -79,8 +79,6 @@ class Grafico(c):
             ruta = os.getenv("REPORTS_PATH_IMG")
             plt.savefig(f'{ruta}{file}.png', format='png')  
             print(f"Imagen guardada como '{file}.png'.")
-            # Mostrar la figura después de guardar
-            #plt.show()
 
         except Exception as e:
             print(f"Error al visualizar la Cola: {e}") 
