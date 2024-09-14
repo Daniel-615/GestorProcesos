@@ -1,5 +1,5 @@
-from Recursos import Recursos
-from Json import Json
+from proceso.Recursos import Recursos
+from proceso.Json import Json
 class Evento():
     contador = 0
 

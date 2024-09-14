@@ -1,6 +1,6 @@
 import matplotlib.pyplot as plt
 from matplotlib.animation import FuncAnimation
-from Cola import Cola as c  
+from proceso.Cola import Cola as c  
 import os
 from dotenv import load_dotenv
 

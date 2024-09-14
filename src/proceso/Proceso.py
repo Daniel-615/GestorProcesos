@@ -4,8 +4,8 @@ from docx import Document
 import random
 import os
 from dotenv import load_dotenv
-from Evento import Evento
-from reportes.Reportes import Reportes
+from proceso.Evento import Evento
+from output.Reportes import Reportes
 
 load_dotenv()
 

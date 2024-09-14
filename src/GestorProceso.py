@@ -1,4 +1,4 @@
-from Grafico import Grafico
+from proceso.Grafico import Grafico
 import os
 
 from planificacion import FIFO, RoundRobin, SJF, PriorityScheduling as Prioridad  

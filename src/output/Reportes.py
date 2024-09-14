@@ -68,30 +68,37 @@ class Reportes:
             print("No se encontraron imágenes válidas para convertir.")
             return None
 
-        nuevo_pdf_path = os.path.join(RUTA_SALIDA_PDF, f"{output_pdf}_nuevo.pdf")
+        nuevo_pdf_path = os.path.join(RUTA_SALIDA_PDF, f"{output_pdf}_temp.pdf")
 
         try:
             # Guardar el nuevo PDF a partir de las imágenes
             imagenes[0].save(nuevo_pdf_path, save_all=True, append_images=imagenes[1:])
             print(f"Imágenes convertidas y guardadas en: {nuevo_pdf_path}")
 
-            # Concatenar con el PDF existente si ya existe
             archivo_pdf_existente = os.path.join(RUTA_SALIDA_PDF, f"{output_pdf}.pdf")
             if os.path.exists(archivo_pdf_existente):
+                # Crear un archivo temporal para el merge
+                pdf_temporal = os.path.join(RUTA_SALIDA_PDF, f"{output_pdf}_merged.pdf")
                 merger = PdfMerger()
+
+                # Agregar el PDF existente y el nuevo
                 merger.append(archivo_pdf_existente)
                 merger.append(nuevo_pdf_path)
 
-                output_pdf_path = os.path.join(RUTA_SALIDA_PDF, f"{output_pdf}.pdf")
-                with open(output_pdf_path, 'wb') as salida:
+                # Escribir el archivo mergeado en un nuevo archivo temporal
+                with open(pdf_temporal, 'wb') as salida:
                     merger.write(salida)
+
                 merger.close()
 
-                # Eliminar el PDF nuevo
-                os.remove(nuevo_pdf_path)
-                print(f"Archivos concatenados y guardados en: {output_pdf_path}")
+                # Reemplazar el archivo original con el archivo mergeado
+                os.remove(archivo_pdf_existente)
+                os.rename(pdf_temporal, archivo_pdf_existente)
+
+                print(f"Archivos concatenados y guardados en: {archivo_pdf_existente}")
+
             else:
-                # Renombrar el nuevo PDF si no existe previamente
+                # Si no existe el PDF previo, simplemente renombrar el nuevo archivo
                 os.rename(nuevo_pdf_path, archivo_pdf_existente)
                 print(f"Nuevo PDF guardado en: {archivo_pdf_existente}")
 

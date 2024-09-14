@@ -1,6 +1,6 @@
-from Proceso import Proceso
+from proceso.Proceso import Proceso
 from GestorProceso import GestorProcesos
-from Json import Json
+from proceso.Json import Json
 from bot.Bot import Bot  
 def iniciarBot():
     bot=Bot()
