@@ -1,18 +1,20 @@
 from proceso.Grafico import Grafico
 import os
-
+from Log import Log
 from planificacion import FIFO, RoundRobin, SJF, PriorityScheduling as Prioridad  
 class GestorProcesos:
     def __init__(self):
-        self.cola_fifo = Grafico()  
-        self.cola_rr = Grafico()  
-        self.cola_sjf = Grafico()   
-        self.cola_priority = Grafico()  
-        self.cola_procesos_nuevos = Grafico()
-        self.cola_procesos_listos = Grafico()  
-        self.cola_procesos_ejecucion = Grafico()
-        self.cola_procesos_bloqueados = Grafico()
+        self.log=Log()
+        self.cola_fifo = Grafico(self.log,"FIFO")  
+        self.cola_rr = Grafico(self.log,"ROUND ROBIN")  
+        self.cola_sjf = Grafico(self.log,"SJF")   
+        self.cola_priority = Grafico(self.log,"PRIORIDAD")  
+        self.cola_procesos_nuevos = Grafico(self.log,"NUEVOS")
+        self.cola_procesos_listos = Grafico(self.log,"LISTOS")  
+        self.cola_procesos_ejecucion = Grafico(self.log,"EJECUCION")
+        self.cola_procesos_bloqueados = Grafico(self.log,"BLOQUEADOS")
         self.cores = None
+        
 
     # Métodos Get y Set
     def getCores(self):

@@ -8,10 +8,17 @@ class Cola:
     @classmethod
     def getContador(cls):
         return Cola.contador
-
+    def setLog(self,log,title):
+        self.log=log
+        self.title=title
+    def getLog(self):
+        return self.log
     def encolar(self, proceso):
         Cola.contador += 1
         self.cola.append(proceso)
+        log=self.getLog()
+        message=f"Proceso {proceso.proceso} tipo {self.title} encolado con prioridad {proceso.prioridad}"
+        log.log_info(message)
         print(f"Proceso {proceso.proceso} encolado con prioridad {proceso.prioridad}")
 
     def desencolar(self):

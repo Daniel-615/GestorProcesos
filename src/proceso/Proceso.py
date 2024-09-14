@@ -67,14 +67,9 @@ class Proceso:
     def convertir_pdf(self, file):
         reportes = Reportes()
         try:
-            # Convertir el archivo DOCX a PDF
             output_pdf = reportes.convertir_docx_a_pdf(file)
 
-            # Asegurarse de que las imágenes también se conviertan a PDF
-            nombre_pdf_imagenes = "graficos"
-            reportes.convertir_imagenes_a_pdf(nombre_pdf_imagenes)
-
-            print(f"Archivos {file} y {nombre_pdf_imagenes} convertidos a PDF con éxito.")
+            print(f"Archivos {file}  convertidos a PDF con éxito.")
         except Exception as e:
             print(f"Error al convertir los archivos a PDF: {e}")
 

@@ -7,10 +7,14 @@ from dotenv import load_dotenv
 load_dotenv()
 
 class Grafico(c): 
-    def __init__(self):       
+    def __init__(self,log,mensaje):       
         super().__init__()
-        self.contador = c.getContador() 
+        self.contador = c.getContador()
+        self.log=log 
+        self.title=mensaje
     
+    def setLog(self):
+        super().setLog(self.log,self.title)
     def encolar(self, proceso):  
         super().encolar(proceso)
     
@@ -67,7 +71,6 @@ class Grafico(c):
                     ax.legend(handles=handles, title='Prioridad')
 
                     ax.set_xlim(0, max(anchos) * 1.5)
-                    #ax.set_xlabel('Ancho basado en Prioridad')
                     ax.set_title(title) 
 
             anim = FuncAnimation(fig, actualizar, frames=10, interval=1000)

@@ -2,6 +2,7 @@ from proceso.Proceso import Proceso
 from GestorProceso import GestorProcesos
 from proceso.Json import Json
 from bot.Bot import Bot  
+from output.Reportes import Reportes
 def iniciarBot():
     bot=Bot()
     bot.start()
@@ -102,6 +103,15 @@ def ejecutar_procesos_por_tipo(gestor, cores):
             gestor.ejecutar_priority()
         except Exception as e:
             print(f"Error: {e}")
+            raise ValueError(e)
+    if gestor.cola_priority.esta_vacia() and gestor.cola_sjf.esta_vacia() and gestor.cola_fifo.esta_vacia() and gestor.cola_rr.esta_vacia():
+        try:
+            reportes=Reportes()
+            nombre_pdf_imagenes = "graficos"
+            reportes.convertir_imagenes_a_pdf(nombre_pdf_imagenes)
+            print(f"{nombre_pdf_imagenes} convertidos a pdf.")
+        except Exception as e:
+            print(f"Error {e}")
             raise ValueError(e)
     
 def main():
