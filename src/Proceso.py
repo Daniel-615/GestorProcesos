@@ -5,6 +5,7 @@ import random
 import os
 from dotenv import load_dotenv
 from Evento import Evento
+from reportes.Reportes import Reportes
 load_dotenv()
 
 class Proceso:
@@ -54,6 +55,24 @@ class Proceso:
     @classmethod
     def devolver_comandos(self):
         return self.comandos_permitidos
+    def crear_docx(self,nombre,salida):
+        try:
+            documento = Document()
+            documento.add_heading("Resultado del Proceso", 0)
+            documento.add_paragraph(salida)
+            documento.save(nombre)
+        except Exception as e:
+            print(f"Error {e}")
+    def convertir_pdf(self,file):
+        reportes=Reportes()
+        try:
+            output_pdf=reportes.convertir_docx_a_pdf(file)
+            #TODO: agregarle las imagenes para concatenar
+            file="graficos"
+            reportes.convertir_imagenes_a_pdf(file)
+            print(f"{file} convertido a pdf con éxito.")
+        except Exception as e:
+            print(f"Error {e}")
     
     def ejecutar_comando(self):
         """Corre un proceso de una lista, hace un reporte acorde a los resultados.
@@ -73,10 +92,9 @@ class Proceso:
 
             ruta = os.getenv("REPORTS_PATH_DOC")
             nombre = f"{ruta}resultado{self.numero_proceso}.docx"
-            documento = Document()
-            documento.add_heading("Resultado del Proceso", 0)
-            documento.add_paragraph(salida)
-            documento.save(nombre)
+            self.crear_docx(nombre,salida)
+            #TODO: Agregar aquí la llamada al pdf para convertirlo.
+            self.convertir_pdf(file=nombre)
             print("Documento guardado con éxito.")
         except Exception as e:
             print(f"Error al ejecutar el comando: {e}")

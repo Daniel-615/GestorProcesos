@@ -40,7 +40,7 @@ class Grafico(c):
         elif prioridad == "baja":
             return 'green'
         return 'gray'
-    
+   
     def visualizar_cola(self, file): 
         try:
             fig, ax = plt.subplots(figsize=(12, 8))  
@@ -79,9 +79,9 @@ class Grafico(c):
             ruta = os.getenv("REPORTS_PATH_IMG")
             plt.savefig(f'{ruta}{file}.png', format='png')  
             print(f"Imagen guardada como '{file}.png'.")
-            
             # Mostrar la figura después de guardar
             #plt.show()
 
         except Exception as e:
-            print(f"Error al visualizar la Cola: {e}")  
+            print(f"Error al visualizar la Cola: {e}") 
+

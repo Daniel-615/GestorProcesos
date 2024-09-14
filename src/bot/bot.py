@@ -1,62 +1,46 @@
 import discord
 import os
 from dotenv import load_dotenv
-
-
 load_dotenv()
 
-intents = discord.Intents.default()
-intents.message_content = True
-intents.dm_messages = True 
+class Bot():
+    def __init__(self):
+        self.intents = discord.Intents.default()
+        self.intents.message_content = True
+        self.client = discord.Client(intents=self.intents)
 
-# Inicializar el cliente de Discord con los intents
-client = discord.Client(intents=intents)
-
-# Obtener las variables de entorno
-TOKEN = os.getenv('DISCORD_TOKEN') 
-DIRECTORIO_IMAGENES = os.getenv('REPORTS_PATH_IMG')  
-
-# Variable global para almacenar el ID del usuario
-USER_ID = None
-
-@client.event
-async def on_ready():
-    print(f'Logged in as {client.user}')
-
-@client.event
-async def on_message(message):
-    global USER_ID
+        # Configura el evento on_ready
+        @self.client.event
+        async def on_ready():
+            print(f'Logged in as {self.client.user}')
+            await self.send_pdfs()  
     
-    # Ignorar los mensajes del propio bot
-    if message.author == client.user:
-        return
+    async def send_pdfs(self):
+        """Envía archivos PDF almacenados en el directorio especificado a un usuario de Discord."""
+        DIRECTORIO_PDFS = os.getenv('REPORTS_PATH_PDF') 
+        USER_ID = int(os.getenv('USER_ID'))
 
-    # Guardar el USER_ID del usuario que envía el mensaje
-    if USER_ID is None:
-        USER_ID = message.author.id  # Obtener el ID del usuario
-        print(f'Usuario identificado: {USER_ID}')
-
-    # Comando para enviar imágenes por mensaje directo
-    if isinstance(message.channel, discord.DMChannel) and message.content.startswith('!enviar_imagen'):
         try:
-            user = await client.fetch_user(USER_ID)  # Cambiar a fetch_user
+            user = await self.client.fetch_user(USER_ID)  
+            
             if user:
-                archivos = os.listdir(DIRECTORIO_IMAGENES)
+                archivos = os.listdir(DIRECTORIO_PDFS)
                 if archivos:
                     for archivo in archivos:
-                        file_path = os.path.join(DIRECTORIO_IMAGENES, archivo)
-                        await user.send(file=discord.File(file_path))
-                        os.remove(file_path) 
-                    #await message.channel.send('Imágenes enviadas correctamente.')
+                        if archivo.endswith('.pdf'):
+                            file_path = os.path.join(DIRECTORIO_PDFS, archivo)
+                            await user.send(file=discord.File(file_path))
+                            os.remove(file_path)
+                    print('PDFs enviados correctamente.')
                 else:
-                    await message.channel.send('No hay imágenes para enviar.')
+                    print('No hay archivos PDF para enviar.')
             else:
-                await message.channel.send('Usuario no encontrado.')
+                print('Usuario no encontrado.')
+        except discord.NotFound:
+            print('Usuario no encontrado.')
         except Exception as e:
-            await message.channel.send(f'Error al enviar imágenes: {str(e)}')
-    
-    # Comando para interactuar en canales regulares
-    elif message.content.startswith('!enviar_imagen'):
-        await message.channel.send("Este comando solo funciona por mensajes directos.")
+            print(f'Error al enviar PDFs: {str(e)}')
 
-client.run(TOKEN)
+    def start(self):
+        TOKEN = os.getenv('DISCORD_TOKEN')
+        self.client.run(TOKEN)

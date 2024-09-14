@@ -1,6 +1,10 @@
 from Proceso import Proceso
 from GestorProceso import GestorProcesos
 from Json import Json
+from bot.Bot import Bot  
+def iniciarBot():
+    bot=Bot()
+    bot.start()
 def agregar_proceso(gestor, cores, n):
     """Función para agregar un nuevo proceso a la cola."""
     
@@ -99,7 +103,7 @@ def ejecutar_procesos_por_tipo(gestor, cores):
         except Exception as e:
             print(f"Error: {e}")
             raise ValueError(e)
-
+    
 def main():
     gestor = GestorProcesos()
     json_config=Json()
@@ -120,11 +124,21 @@ def main():
             n += 1  
         elif action == "empezar":
             ejecutar_procesos_por_tipo(gestor, cores)
+        elif action == "bot":
+            json_config.cargar_configuracion()
+            enviar_reportes=json_config.getDc()
+            if enviar_reportes:
+                print("Mandando reportes por medio del bot..")
+                try:
+                    iniciarBot()
+                except Exception as e:
+                    print(f"Error al iniciar el bot: {e}")
+            else:
+                print("La configuración indica que no se deben enviar reportes por Discord.")
         elif action == "salir":
             print("Saliendo del programa.")
             break
         else:
             print("Opción no válida, por favor ingresa 'agregar', 'empezar' o 'salir'.")
-
 if __name__ == "__main__":
     main()

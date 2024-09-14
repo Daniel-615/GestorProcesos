@@ -18,7 +18,7 @@ class Json():
             with open(nombre_archivo, 'r') as archivo:
                 datos = json.load(archivo)
                 self.mostrar_colas = datos.get('mostrar_colas', False)
-                self.mandar_colas_dc = datos.get('mandar_colas_dc', False)
+                self.mostrar_colas_dc = datos.get('mandar_colas_dc', False)
         except FileNotFoundError:
             print(f"El archivo {nombre_archivo} no se encontró.")
         except json.JSONDecodeError:
