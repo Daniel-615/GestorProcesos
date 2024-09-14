@@ -1,4 +1,6 @@
 **/__pycache__/
-**/reportes/
+**/pdf/
+**/doc/
+**/img/
 .env
 **/.vs_code/
