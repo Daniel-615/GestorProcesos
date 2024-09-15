@@ -19,7 +19,6 @@ class Cola:
         log=self.getLog()
         message=f"Proceso {proceso.proceso} tipo {self.title} encolado con prioridad {proceso.prioridad}"
         log.log_info(message)
-        print(f"Proceso {proceso.proceso} encolado con prioridad {proceso.prioridad}")
 
     def desencolar(self):
         if self.cola:

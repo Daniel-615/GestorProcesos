@@ -17,6 +17,8 @@ class GestorProcesos:
         
 
     # Métodos Get y Set
+    def getLog(self):
+        return self.log
     def getCores(self):
         return self.cores
 

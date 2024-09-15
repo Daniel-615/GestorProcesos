@@ -81,8 +81,11 @@ class Grafico(c):
             # Guardar la imagen
             ruta = os.getenv("REPORTS_PATH_IMG")
             plt.savefig(f'{ruta}{file}.png', format='png')  
-            print(f"Imagen guardada como '{file}.png'.")
+            log=self.getLog()
+            message=f"Imagen guardada como '{file}.png'. "
+            log.log_info(message)
 
         except Exception as e:
-            print(f"Error al visualizar la Cola: {e}") 
+            message=f"Error al visualizar la Cola: {e}"
+            log.log_error(message)
 

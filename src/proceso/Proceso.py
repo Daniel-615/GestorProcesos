@@ -33,6 +33,8 @@ class Proceso:
         # Usando de manera adecuada
         self.evento = Evento(gestor)
         self.evento.setEstadoNuevo()
+        #Usado para los logs
+        self.gestor=gestor
     
     # Obtener el evento para ser usado en GestorProceso
     def getProceso(self):
@@ -54,7 +56,15 @@ class Proceso:
     @classmethod
     def devolver_comandos(cls):
         return cls.comandos_permitidos
-
+    def infLog(self,message):
+        log=self.gestor.getLog()
+        log.log_info(message)
+    def warnLog(self,message):
+        log=self.gestor.getLog()
+        log.log_warning(message)
+    def errLog(self,message):
+        log=self.gestor.getLog()
+        log.log_error(message)
     def crear_docx(self, nombre, salida):
         try:
             documento = Document()
@@ -62,16 +72,18 @@ class Proceso:
             documento.add_paragraph(salida)
             documento.save(nombre)
         except Exception as e:
-            print(f"Error {e}")
+            message=f"Error al crear el doc: {e}"
+            self.errLog(message)
 
     def convertir_pdf(self, file):
         reportes = Reportes()
         try:
-            output_pdf = reportes.convertir_docx_a_pdf(file)
-
-            print(f"Archivos {file}  convertidos a PDF con éxito.")
+            reportes.convertir_docx_a_pdf(file,self.gestor)
+            message=f"Archivos {file} convertidos a PDF con exito."
+            self.infLog(message)
         except Exception as e:
-            print(f"Error al convertir los archivos a PDF: {e}")
+            message=f"Error al convertir los archivos a PDF: {e}"
+            self.errLog(message)
 
     def ejecutar_comando(self):
         """Corre un proceso de una lista, hace un reporte acorde a los resultados."""
@@ -80,6 +92,8 @@ class Proceso:
             if self.tipo_proceso in Proceso.comandos_permitidos:
                 comando = Proceso.comandos_permitidos[self.tipo_proceso]
             else:
+                message=f"Comando no permitido: {self.tipo_proceso}"
+                self.warnLog(message)
                 raise ValueError(f"Comando no permitido: {self.tipo_proceso}")
 
             resultado = subprocess.run(comando, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
@@ -91,10 +105,11 @@ class Proceso:
 
             # Convertir el DOCX y las imágenes a PDF
             self.convertir_pdf(file=nombre)
-
-            print("Documento y PDFs creados con éxito.")
+            message="Documentos y PDFS creados con exito."
+            self.infLog(message)
         except Exception as e:
-            print(f"Error al ejecutar el comando: {e}")
+            message=f"Error al ejecutar el comando: {e}"
+            self.errLog(message)
 
     def calcular_tiempo_ejecucion(self):
         """Simula el tiempo de ejecución acorde a la prioridad."""
@@ -104,18 +119,21 @@ class Proceso:
             return random.uniform(3, 6)
         elif self.prioridad == "baja":
             return random.uniform(6, 10)
-        return 5  # Default
+        return 5 
 
     def ejecutar(self):
         """Ejecuta y pasa filtros acorde a los eventos."""
         try:
             self.startProcess()
-            print(f"Ejecutando proceso con prioridad {self.prioridad}, tipo: ({self.tipo_proceso})")
+            message=f"Ejecutando proceso con prioridad {self.prioridad}, tipo: ({self.tipo_proceso})"
+            self.infLog(message)
             
             # Simula el tiempo de ejecución
             time.sleep(self.rafaga_cpu)
-
-            print(f"Tiempo estimado del proceso {self.proceso}: {self.rafaga_cpu:.2f} segundos")
-            print(f"Momento en que se inició: {self.tiempo_llegada}")
+            message=f"Tiempo estimado del proceso {self.proceso}: {self.rafaga_cpu:.2f} segundos"
+            self.infLog(message)
+            message=f"Momento en que se inició: {self.tiempo_llegada}"
+            self.infLog(message)
         except Exception as e:
-            print(f"Error al ejecutar el proceso: {e}")
+            message=f"Error al ejecutar el proceso: {e}"
+            self.errLog(message)

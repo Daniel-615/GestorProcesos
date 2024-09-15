@@ -30,3 +30,6 @@ class Log():
     def log_error(self, message):
         """Método para loggear mensajes de error"""
         self.logger.error(message)
+    def log_warning(self,message):
+        """Método para loggear mensajes de precaución"""
+        self.logger.warning(message)

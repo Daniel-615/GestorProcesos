@@ -6,6 +6,12 @@ from output.Reportes import Reportes
 def iniciarBot():
     bot=Bot()
     bot.start()
+def infLog(gestor,message):
+    log=gestor.getLog()
+    log.log_info(message)
+def errLog(gestor,message):
+    log=gestor.getLog()
+    log.log_error(message)
 def agregar_proceso(gestor, cores, n):
     """Función para agregar un nuevo proceso a la cola."""
     
@@ -46,11 +52,13 @@ def agregar_proceso(gestor, cores, n):
             tipo_planificacion=planificacion
         )
     except Exception as e:
-        print(f"Error {e}")
-    
+        message=f"Error al agregar el proceso: {e}"
+        errLog(gestor,message)
+
     # Agregar el proceso a la cola correspondiente
     gestor.agregar_proceso(proceso)
-    print(f"Proceso {n} agregado correctamente a la cola de {planificacion.upper()}.")
+    message=f"Proceso {n} agregado correctamente a la cola de {planificacion.upper()}."
+    infLog(gestor,message)
 
 def ejecutar_procesos_por_tipo(gestor, cores):
     """Función para ejecutar los procesos agrupados por su tipo de planificación."""
@@ -69,7 +77,8 @@ def ejecutar_procesos_por_tipo(gestor, cores):
     # Ejecutar los procesos de acuerdo a su tipo de planificación
     if not gestor.cola_fifo.esta_vacia():
         try:
-            print("Ejecutando procesos FIFO...")
+            message="Ejecutando procesos FIFO..."
+            infLog(gestor,message)
             gestor.visualizar(1)
             gestor.ejecutar_fifo(cores)
         except Exception as e:
@@ -80,7 +89,8 @@ def ejecutar_procesos_por_tipo(gestor, cores):
 
     if not gestor.cola_rr.esta_vacia():
         try:
-            print("Ejecutando procesos Round Robin...")
+            message="Ejecutando procesos Round Robin..."
+            infLog(gestor,message)
             gestor.visualizar(2)
             gestor.ejecutar_robin()
         except Exception as e:
@@ -89,7 +99,8 @@ def ejecutar_procesos_por_tipo(gestor, cores):
         
     if not gestor.cola_sjf.esta_vacia():
         try:
-            print("Ejecutando procesos SJF...")
+            message="Ejecutando procesos SJF..."
+            infLog(gestor,message)
             gestor.visualizar(3)
             gestor.ejecutar_sjf()
         except Exception as e:
@@ -98,7 +109,8 @@ def ejecutar_procesos_por_tipo(gestor, cores):
         
     if not gestor.cola_priority.esta_vacia():
         try:
-            print("Ejecutando procesos por prioridad...")
+            message="Ejecutando procesos por prioridad..."
+            infLog(gestor,message)
             gestor.visualizar(4)
             gestor.ejecutar_priority()
         except Exception as e:
@@ -108,8 +120,10 @@ def ejecutar_procesos_por_tipo(gestor, cores):
         try:
             reportes=Reportes()
             nombre_pdf_imagenes = "graficos"
-            reportes.convertir_imagenes_a_pdf(nombre_pdf_imagenes)
-            print(f"{nombre_pdf_imagenes} convertidos a pdf.")
+            reportes.convertir_imagenes_a_pdf(nombre_pdf_imagenes,gestor)
+            
+            message=f"{nombre_pdf_imagenes} convertidos a pdf."
+            infLog(gestor,message)
         except Exception as e:
             print(f"Error {e}")
             raise ValueError(e)
