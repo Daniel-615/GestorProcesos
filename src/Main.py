@@ -3,6 +3,8 @@ from GestorProceso import GestorProcesos
 from proceso.Json import Json
 from bot.Bot import Bot  
 from output.Reportes import Reportes
+from output.Voz import Voz
+
 def iniciarBot():
     bot=Bot()
     bot.start()
@@ -129,6 +131,7 @@ def ejecutar_procesos_por_tipo(gestor, cores):
             raise ValueError(e)
     
 def main():
+    voz=Voz()
     gestor = GestorProcesos()
     json_config=Json()
     cores = gestor.consulta_cores()  
@@ -152,7 +155,8 @@ def main():
             json_config.cargar_configuracion()
             enviar_reportes=json_config.getDc()
             if enviar_reportes:
-                print("Mandando reportes por medio del bot..")
+                message="Mandando reportes"
+                voz.hablar(message)
                 try:
                     iniciarBot()
                 except Exception as e:
@@ -160,7 +164,7 @@ def main():
             else:
                 print("La configuración indica que no se deben enviar reportes por Discord.")
         elif action == "salir":
-            print("Saliendo del programa.")
+            voz.hablar(" La planificación ha sido un éxito. ¡Hasta la próxima!")
             break
         else:
             print("Opción no válida, por favor ingresa 'agregar', 'empezar' o 'salir'.")

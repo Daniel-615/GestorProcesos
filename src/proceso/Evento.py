@@ -1,15 +1,18 @@
 from proceso.Recursos import Recursos
 from proceso.Json import Json
+from output.Voz import Voz
+
 class Evento():
     contador = 0
 
-    def __init__(self,gestor):
+    def __init__(self,gestor,proceso):
         Evento.contador += 1
         self.numero_evento = Evento.contador
         self.setEstadoNuevo()
         self.recursos = Recursos()
         self.gestor=gestor
-        
+        self.voz=Voz()
+        self.proceso=proceso
 
     def getEstado(self):
         return self.estado
@@ -24,14 +27,19 @@ class Evento():
  
         if cpu < 80 and memoria > 2:  
             self.estado = "Listo"
+            message=f"El {self.proceso} ha entrado en estado {self.estado}"
+            self.voz.hablar(message)
         else:
-            self.estado = "Bloqueado"
+            self.setEstadoBlock()
 
     def setEstadoBlock(self):
         self.estado = "Bloqueado"
-    
+        message=f"El {self.proceso} ha entrado en estado {self.estado}"
+        self.voz.hablar(message)    
     def setEstadoTerminado(self):
         self.estado = "Terminado"
+        message=f"El {self.proceso} ha sido {self.estado}."
+        self.voz.hablar(message)
     
     def setEstadoEjecucion(self):
         """Cambia estado a ejecución, dependiendo el nivel de recursos disponibles que tenga.
@@ -40,6 +48,8 @@ class Evento():
         memoria = self.recursos.obtener_info_memoria()
         if cpu < 50 and memoria > 4: 
             self.estado = "Ejecucion"
+            message=f"El {self.proceso} ha entrado en estado {self.estado}"
+            self.voz.hablar(message)
         else:
             self.setEstadoBlock()
     def intentar_desbloquear(self):
@@ -48,6 +58,8 @@ class Evento():
         memoria = self.recursos.obtener_info_memoria()
         if cpu < 80 and memoria > 2:
             self.setEstadoListo()
+            message=f"El {self.proceso} ha sido desbloqueado"
+            self.voz.hablar(message)
             return True
         return False
     def visualizarColaEvento(self,gestor):

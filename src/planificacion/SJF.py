@@ -1,9 +1,11 @@
 import concurrent.futures
+from output.Voz import Voz
 class SJF:
     def __init__(self, c_p, c_p_b, gestor):
         self.cola_procesos = c_p
         self.cola_procesos_bloqueados = c_p_b
         self.gestor = gestor
+        self.voz=Voz()
 
     def ejecutar_procesos(self):
         """Por medio de hilos, invoca a la clase Evento para obtener los estados dependiendo 
@@ -12,6 +14,8 @@ class SJF:
             procesos_completados = []
             while not self.cola_procesos.esta_vacia() or not self.cola_procesos_bloqueados.esta_vacia():
                 # Intentar desbloquear procesos antes de procesar la siguiente cola
+                message=" Ejecutando proceso por SJF"
+                self.voz.hablar(message)
                 self._intentar_desbloquear_procesos()
 
                 # Ordenar los procesos por el tiempo de ráfaga más corto
@@ -49,6 +53,8 @@ class SJF:
 
     def _manejar_proceso_nuevo(self, proceso, evento, executor):
         """Maneja el proceso en estado 'Nuevo', moviéndolo a través de los estados correspondientes."""
+        message = f"El {proceso.getProceso()} ha entrado en el estado {evento.getEstado()}."
+        self.voz.hablar(message)
         self.gestor.mover_proceso_nuevo(proceso)
         evento.avanzarEstado(proceso)
 
@@ -61,19 +67,21 @@ class SJF:
         proceso.ejecutar_comando()
         proceso.rafaga_cpu = 0
         evento.avanzarEstado(proceso)
-        print(f"Proceso {proceso.getProceso()} ha terminado.")
+        message=f"El {proceso.getProceso()} ha terminado."
+        self.voz.hablar(message)
         
         if evento.getEstado() == "Terminado":
-            print(f"Proceso {proceso.getProceso()} completado y terminado.")
+            message=f"El {proceso.getProceso()} ha terminado."
+            self.voz.hablar(message)
 
     def _manejar_proceso_ejecucion(self, proceso, evento, executor):
         """Maneja el proceso en estado 'Ejecución', ejecutando comandos y avanzando estados."""
         proceso.ejecutar_comando()
         evento.avanzarEstado(proceso)
-        print(f"Proceso {proceso.getProceso()} está en ejecución.")
 
         if proceso.ha_fallado():
             print(f"Proceso {proceso.getProceso()} ha fallado y se moverá a bloqueados.")
             self.gestor.mover_proceso_bloqueado(proceso)
         elif evento.getEstado() == "Terminado":
-            print(f"Proceso {proceso.getProceso()} ha terminado.")
+            message=f"El {proceso.getProceso()} ha terminado."
+            self.voz.hablar(message)

@@ -1,11 +1,12 @@
 import concurrent.futures
 import heapq  
-
+from output.Voz import Voz
 class PriorityScheduling:
     def __init__(self, c_p, c_p_b, gestor):
         self.cola_procesos = c_p
         self.cola_procesos_bloqueados = c_p_b
         self.gestor = gestor
+        self.voz=Voz()
 
     def ejecutar_procesos(self):
         """Por medio de hilos, invoca a la clase Evento para obtener los estados dependiendo 
@@ -17,7 +18,8 @@ class PriorityScheduling:
             cola_prioridad = []
 
             while not self.cola_procesos.esta_vacia() or not self.cola_procesos_bloqueados.esta_vacia() or cola_prioridad:
-               
+                message=" Ejecutando proceso por Priority Scheduling."
+                self.voz.hablar(message)
                 self._intentar_desbloquear_procesos()
 
                 # Agregar procesos de la cola de procesos a la cola de prioridad
@@ -64,6 +66,8 @@ class PriorityScheduling:
 
     def _manejar_proceso_nuevo(self, proceso, evento, executor, futuros):
         """Maneja el proceso en estado 'Nuevo', moviéndolo a través de los estados correspondientes."""
+        message = f"El {proceso.getProceso()} ha entrado en el estado {evento.getEstado()}."
+        self.voz.hablar(message)
         self.gestor.mover_proceso_nuevo(proceso)
         evento.avanzarEstado(proceso)
 
@@ -77,7 +81,8 @@ class PriorityScheduling:
         evento.avanzarEstado(proceso)
 
         if evento.getEstado() == "Terminado":
-            print(f"Proceso {proceso.getProceso()} ha terminado.")
+            message=f"El {proceso.getProceso()} ha terminado."
+            self.voz.hablar(message)
         else:
             futuros.append((executor.submit(proceso.ejecutar), proceso))
 
@@ -85,14 +90,14 @@ class PriorityScheduling:
         """Maneja el proceso en estado 'Ejecución', ejecutando comandos y avanzando estados."""
         proceso.ejecutar_comando()
         evento.avanzarEstado(proceso)
-        print(f"Proceso {proceso.getProceso()} está en ejecución.")
 
         if proceso.ha_fallado():
             print(f"Proceso {proceso.getProceso()} ha fallado y se moverá a bloqueados.")
             self.gestor.mover_proceso_bloqueado(proceso)
             self.cola_procesos_bloqueados.encolar(proceso)  
         elif evento.getEstado() == "Terminado":
-            print(f"Proceso {proceso.getProceso()} ha terminado.")
+            message=f"El {proceso.getProceso()} ha terminado."
+            self.voz.hablar(message)
         else:
             futuros.append((executor.submit(proceso.ejecutar), proceso))
 

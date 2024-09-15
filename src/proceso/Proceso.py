@@ -31,7 +31,7 @@ class Proceso:
         self.tipo_planificacion = tipo_planificacion
         self.rafaga_cpu = self.calcular_tiempo_ejecucion()
         # Usando de manera adecuada
-        self.evento = Evento(gestor)
+        self.evento = Evento(gestor,proceso)
         self.evento.setEstadoNuevo()
         #Usado para los logs
         self.gestor=gestor
@@ -132,7 +132,7 @@ class Proceso:
             time.sleep(self.rafaga_cpu)
             message=f"Tiempo estimado del proceso {self.proceso}: {self.rafaga_cpu:.2f} segundos"
             self.infLog(message)
-            message=f"Momento en que se inició: {self.tiempo_llegada}"
+            message=f"Momento en que se inicio: {self.tiempo_llegada}"
             self.infLog(message)
         except Exception as e:
             message=f"Error al ejecutar el proceso: {e}"

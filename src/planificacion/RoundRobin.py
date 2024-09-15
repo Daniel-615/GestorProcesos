@@ -1,10 +1,12 @@
 import concurrent.futures
+from output.Voz import Voz
 class RoundRobin:
     def __init__(self, c_p, c_p_b, gestor, quantum=2):
         self.cola_procesos = c_p
         self.cola_procesos_bloqueados = c_p_b
         self.quantum = quantum
         self.gestor = gestor
+        self.voz=Voz()
 
     def ejecutar_procesos(self):
         """Por medio de hilos, invoca a la clase Evento para obtener los estados dependiendo 
@@ -16,7 +18,8 @@ class RoundRobin:
                 proceso = (self.cola_procesos_bloqueados.desencolar() 
                            if not self.cola_procesos_bloqueados.esta_vacia() 
                            else self.cola_procesos.desencolar())
-
+                message=" Ejecutando proceso por Round Robin."
+                self.voz.hablar(message)
                 if proceso:
                     evento = proceso.getEvento()
 
@@ -40,6 +43,8 @@ class RoundRobin:
 
     def _manejar_proceso_nuevo(self, proceso, evento, executor, futuros):
         """Maneja el proceso en estado 'Nuevo', moviéndolo a través de los estados correspondientes."""
+        message = f"El {proceso.getProceso()} ha entrado en el estado {evento.getEstado()}."
+        self.voz.hablar(message)
         self.gestor.mover_proceso_nuevo(proceso)
         evento.avanzarEstado(proceso)
 
@@ -61,7 +66,8 @@ class RoundRobin:
             proceso.ejecutar_comando()
             proceso.rafaga_cpu = 0
             evento.avanzarEstado(proceso)
-            print(f"Proceso {proceso.getProceso()} ha terminado.")
+            message=f"El {proceso.getProceso()} ha terminado."
+            self.voz.hablar(message)
         
         evento.avanzarEstado(proceso)
 
@@ -69,14 +75,14 @@ class RoundRobin:
         """Maneja el proceso en estado 'Ejecución', ejecutando comandos y avanzando estados."""
         proceso.ejecutar_comando()
         evento.avanzarEstado(proceso)
-        print(f"Proceso {proceso.getProceso()} está en ejecución.")
 
         if proceso.ha_fallado():
             print(f"Proceso {proceso.getProceso()} ha fallado y se moverá a bloqueados.")
             self.gestor.mover_proceso_bloqueado(proceso)
             self.cola_procesos_bloqueados.encolar(proceso)  
         elif evento.getEstado() == "Terminado":
-            print(f"Proceso {proceso.getProceso()} ha terminado.")
+            message=f"El {proceso.getProceso()} ha terminado."
+            self.voz.hablar(message)
         else:
             futuros.append((executor.submit(proceso.ejecutar), proceso))
 
