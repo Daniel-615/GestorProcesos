@@ -82,7 +82,7 @@ def ejecutar_procesos_por_tipo(gestor, cores):
             message="Ejecutando procesos FIFO..."
             infLog(gestor,message)
             gestor.visualizar(1)
-            gestor.ejecutar_fifo(cores)
+            gestor.ejecutar_fifo()
         except Exception as e:
             print(f"Error: {e}")
             raise ValueError(e)
