@@ -25,7 +25,7 @@ def agregar_proceso(gestor, cores, n):
         gestor.cola_priority.contador
     )
     
-    if total_procesos >= cores:
+    if total_procesos > cores:
         print(f"Has alcanzado el número máximo de procesos asignados a {cores} cores.")
         return
     

@@ -1,25 +1,24 @@
 from proceso.Grafico import Grafico
 import os
 from Log import Log
-from planificacion import FIFO, RoundRobin, SJF, PriorityScheduling as Prioridad
-
+from planificacion import FIFO, RoundRobin, SJF, PriorityScheduling as Prioridad  
 class GestorProcesos:
     def __init__(self):
-        self.log = Log()
-        self.cola_fifo = Grafico(self.log, "FIFO")
-        self.cola_rr = Grafico(self.log, "ROUND ROBIN")
-        self.cola_sjf = Grafico(self.log, "SJF")
-        self.cola_priority = Grafico(self.log, "PRIORIDAD")
-        self.cola_procesos_nuevos = Grafico(self.log, "NUEVOS")
-        self.cola_procesos_listos = Grafico(self.log, "LISTOS")
-        self.cola_procesos_ejecucion = Grafico(self.log, "EJECUCION")
-        self.cola_procesos_bloqueados = Grafico(self.log, "BLOQUEADOS")
+        self.log=Log()
+        self.cola_fifo = Grafico(self.log,"FIFO")  
+        self.cola_rr = Grafico(self.log,"ROUND ROBIN")  
+        self.cola_sjf = Grafico(self.log,"SJF")   
+        self.cola_priority = Grafico(self.log,"PRIORIDAD")  
+        self.cola_procesos_nuevos = Grafico(self.log,"NUEVOS")
+        self.cola_procesos_listos = Grafico(self.log,"LISTOS")  
+        self.cola_procesos_ejecucion = Grafico(self.log,"EJECUCION")
+        self.cola_procesos_bloqueados = Grafico(self.log,"BLOQUEADOS")
         self.cores = None
+        
 
     # Métodos Get y Set
     def getLog(self):
         return self.log
-
     def getCores(self):
         return self.cores
 
@@ -34,10 +33,10 @@ class GestorProcesos:
 
     def getProcesos(self):
         return self.cola_procesos
-
+    
     def agregar_proceso(self, proceso):
         # Dependiendo del tipo de planificación, el proceso será agregado a su cola correspondiente
-        if proceso.tipo_planificacion == 'fifo':
+        if proceso.tipo_planificacion== 'fifo':
             self.cola_fifo.encolar(proceso)
         elif proceso.tipo_planificacion == 'robin':
             self.cola_rr.encolar(proceso)
@@ -79,10 +78,9 @@ class GestorProcesos:
             return None
 
     # FIFO
-    def ejecutar_fifo(self):
-        cores = self.consulta_cores()
+    def ejecutar_fifo(self, cores):
         fifo_planificador = FIFO.Fifo(
-            c_p=self.cola_fifo,
+            c_p=self.cola_fifo, 
             c_p_b=self.cola_procesos_bloqueados,
             max_cores=cores,
             gestor=self
@@ -91,65 +89,60 @@ class GestorProcesos:
 
     # RoundRobin
     def ejecutar_robin(self):
-        cores = self.consulta_cores()
         robin_planificador = RoundRobin.RoundRobin(
-            c_p=self.cola_rr,
+            c_p=self.cola_rr, 
             c_p_b=self.cola_procesos_bloqueados,
-            max_cores=cores,
             gestor=self
         )
         robin_planificador.ejecutar_procesos()
 
     # SJF
     def ejecutar_sjf(self):
-        cores = self.consulta_cores()
         sjf_planificador = SJF.SJF(
-            c_p=self.cola_sjf,
+            c_p=self.cola_sjf, 
             c_p_b=self.cola_procesos_bloqueados,
-            max_cores=cores,
             gestor=self
         )
         sjf_planificador.ejecutar_procesos()
 
     # Prioridad
     def ejecutar_priority(self):
-        cores = self.consulta_cores()
         prioridad_planificador = Prioridad.PriorityScheduling(
-            c_p=self.cola_priority,
+            c_p=self.cola_priority,  
             c_p_b=self.cola_procesos_bloqueados,
-            max_cores=cores,
             gestor=self
         )
         prioridad_planificador.ejecutar_procesos()
 
     def consulta_cores(self):
         self.cores = os.cpu_count()
-        if self.cores < 5:
-            print(f"Advertencia: solo tienes {self.cores} cores disponibles. El programa intentará ejecutarse con esta cantidad.")
-        else:
-            print(f"Tienes {self.cores} cores disponibles.")
-        
-        # Usa hasta 5 cores, o menos si el sistema tiene menos de 5
-        cores = min(5, self.cores)
-        print(f"Usando {cores} cores.")
-        return cores
+        print(f"Tienes {self.cores} cores disponibles.")
+        while True:
+            try:
+                cores = int(input("¿Cuántos cores deseas utilizar? "))
+                if cores > 0 and cores <= self.cores:
+                    return cores
+                else:
+                    print(f"Por favor, ingresa un número entre 1 y {self.cores}.")
+            except ValueError:
+                print("Entrada no válida. Por favor, ingresa un número.")
 
     def visualizar(self, num):
         if num == 1:
-            self.cola_fifo.visualizar_cola('visualizacion_cola_fifo', 'FIFO')
+            self.cola_fifo.visualizar_cola('visualizacion_cola_fifo','FIFO')
         elif num == 2:
-            self.cola_rr.visualizar_cola('visualizacion_cola_rr', 'ROUND ROBIN')
+            self.cola_rr.visualizar_cola('visualizacion_cola_rr','ROUND ROBIN')
         elif num == 3:
-            self.cola_sjf.visualizar_cola('visualizacion_cola_sjf', 'SJF')
+            self.cola_sjf.visualizar_cola('visualizacion_cola_sjf','SJF')
         elif num == 4:
-            self.cola_priority.visualizar_cola('visualizacion_cola_prioridad', 'PRIORIDAD')
-        elif num == 5:
-            self.cola_procesos_nuevos.visualizar_cola('visualizacion_cola_nuevos', 'NUEVOS')
-        elif num == 6:
-            self.cola_procesos_listos.visualizar_cola('visualizacion_cola_listos', 'LISTOS')
-        elif num == 7:
-            self.cola_procesos_ejecucion.visualizar_cola('visualizacion_cola_ejecucion', 'EJECUCION')
-        elif num == 8:
-            self.cola_procesos_bloqueados.visualizar_cola('visualizacion_cola_bloqueados', 'BLOQUEADOS')
+            self.cola_priority.visualizar_cola('visualizacion_cola_prioridad','PRIORIDAD')
+        elif num==5:
+            self.cola_procesos_nuevos.visualizar_cola('visualizacion_cola_nuevos','NUEVOS')
+        elif num==6:
+            self.cola_procesos_listos.visualizar_cola('visualizacion_cola_listos','LISTOS')
+        elif num==7:
+            self.cola_procesos_ejecucion.visualizar_cola('visualizacion_cola_ejecucion','EJECUCION')
+        elif num==8:
+            self.cola_procesos_bloqueados.visualizar_cola('visualizacion_cola_bloqueados','BLOQUEADOS')
         else:
             print("No has seleccionado una opción válida.")
