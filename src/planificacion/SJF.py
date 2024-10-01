@@ -21,7 +21,6 @@ class SJF:
                 # Ordenar los procesos por el tiempo de ráfaga más corto
                 self.cola_procesos.ordenar_por_rafaga()
 
-                # Procesar los procesos en cola
                 while not self.cola_procesos.esta_vacia():
                     proceso = self.cola_procesos.desencolar()
                     evento = proceso.getEvento()

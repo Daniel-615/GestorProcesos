@@ -53,7 +53,8 @@ class Evento():
         else:
             self.setEstadoBlock()
     def intentar_desbloquear(self):
-        """Revisa si el proceso bloqueado puede ser desbloqueado."""
+        """Revisa si el proceso bloqueado puede ser desbloqueado.
+        """
         cpu = self.recursos.obtener_uso_cpu()
         memoria = self.recursos.obtener_info_memoria()
         if cpu < 80 and memoria > 2:

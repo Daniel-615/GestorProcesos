@@ -255,7 +255,6 @@ class MainWindow(QMainWindow):
                 message = "Mandando reportes"
                 self.voz.hablar(message)
                 
-                # Crear y iniciar el hilo del bot
                 self.bot_thread = BotThread()
                 self.bot_thread.finished_signal.connect(self.on_bot_finished)
                 self.bot_thread.start()

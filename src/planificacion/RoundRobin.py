@@ -58,13 +58,11 @@ class RoundRobin:
         if proceso.rafaga_cpu > self.quantum:
             print(f"Ejecutando {proceso.getProceso()} por {self.quantum} segundos.")
             
-            # Aquí actualizamos el estado gráfico a "Ejecutando"
             self.gestor.setEstadoGrafico("Ejecutando")
             proceso.ejecutar_comando()
             proceso.rafaga_cpu -= self.quantum
             
             if proceso.rafaga_cpu > 0:
-                # Si el quantum no fue suficiente, lo reencolamos y cambiamos el estado gráfico a "Esperando"
                 self.gestor.setEstadoGrafico("Esperando")
                 self.cola_procesos.encolar(proceso)
                 print(f"Proceso {proceso.getProceso()} reencolado con {proceso.rafaga_cpu:.2f} segundos restantes.")
@@ -72,13 +70,11 @@ class RoundRobin:
         else:
             print(f"Ejecutando {proceso.getProceso()} por {proceso.rafaga_cpu:.2f} segundos.")
             
-            # Actualizamos el estado gráfico a "Ejecutando"
             self.gestor.setEstadoGrafico("Ejecutando")
             proceso.ejecutar_comando()
             proceso.rafaga_cpu = 0
             evento.avanzarEstado(proceso)
             
-            # El proceso ha terminado, cambiamos el estado gráfico a "Quantum agotado"
             self.gestor.setEstadoGrafico("Quantum agotado")
             message = f"El {proceso.getProceso()} ha terminado."
             self.voz.hablar(message)

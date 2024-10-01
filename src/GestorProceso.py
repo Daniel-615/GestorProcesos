@@ -80,6 +80,8 @@ class GestorProcesos:
 
     # FIFO
     def ejecutar_fifo(self):
+        """Ejecuta por fifo.
+        """
         fifo_planificador = FIFO.Fifo(
             c_p=self.cola_fifo, 
             c_p_b=self.cola_procesos_bloqueados,
@@ -90,6 +92,8 @@ class GestorProcesos:
 
     # RoundRobin
     def ejecutar_robin(self):
+        """Ejecuta por robin.
+        """
         robin_planificador = RoundRobin.RoundRobin(
             c_p=self.cola_rr, 
             c_p_b=self.cola_procesos_bloqueados,
@@ -99,6 +103,8 @@ class GestorProcesos:
 
     # SJF
     def ejecutar_sjf(self):
+        """Ejecuta por sjf.
+        """
         sjf_planificador = SJF.SJF(
             c_p=self.cola_sjf, 
             c_p_b=self.cola_procesos_bloqueados,
@@ -108,6 +114,8 @@ class GestorProcesos:
 
     # Prioridad
     def ejecutar_priority(self):
+        """Ejecuta por prioridad.
+        """
         prioridad_planificador = Prioridad.PriorityScheduling(
             c_p=self.cola_priority,  
             c_p_b=self.cola_procesos_bloqueados,
@@ -129,6 +137,8 @@ class GestorProcesos:
                 print("Entrada no válida. Por favor, ingresa un número.")
 
     def visualizar(self, num):
+        """Visualiza en base a un número de decisión.
+        """
         if num == 1:
             self.cola_fifo.visualizar_cola('visualizacion_cola_fifo','FIFO')
         elif num == 2:
