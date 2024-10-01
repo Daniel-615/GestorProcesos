@@ -160,7 +160,6 @@ class Grafico(c):
                     
                     bars = ax.barh(range(len(procesos)), anchos, tick_label=nombres_prioridades, color=colores)
                     
-                    # Mejora: Agregar el tiempo de ejecución en un cuadro con formato más elegante
                     for bar, proceso in zip(bars, procesos):
                         ax.text(bar.get_width() + 0.1, bar.get_y() + bar.get_height() / 2,
                                 f'{proceso.rafaga_cpu} unidades',
