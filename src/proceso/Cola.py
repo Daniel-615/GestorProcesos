@@ -38,3 +38,7 @@ class Cola:
         procesos = self.obtener_procesos()
         procesos.sort(key=lambda p: p.rafaga_cpu)
         self.procesos = procesos  
+    def obtener_tiempos_procesos(self):
+        """Devuelve una lista con los tiempos de ráfaga (duración) de cada proceso en la cola."""
+        procesos=self.obtener_procesos()
+        return [p.rafaga_cpu for p in procesos]

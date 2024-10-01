@@ -33,7 +33,8 @@ class GestorProcesos:
 
     def getProcesos(self):
         return self.cola_procesos
-    
+    def setEstadoGrafico(self,estado):
+        self.cola_rr.EstadoRobinGrafico(estado)
     def agregar_proceso(self, proceso):
         # Dependiendo del tipo de planificación, el proceso será agregado a su cola correspondiente
         if proceso.tipo_planificacion== 'fifo':
@@ -78,11 +79,11 @@ class GestorProcesos:
             return None
 
     # FIFO
-    def ejecutar_fifo(self, cores):
+    def ejecutar_fifo(self):
         fifo_planificador = FIFO.Fifo(
             c_p=self.cola_fifo, 
             c_p_b=self.cola_procesos_bloqueados,
-            max_cores=cores,
+            max_cores=self.cores,
             gestor=self
         )
         fifo_planificador.ejecutar_procesos()

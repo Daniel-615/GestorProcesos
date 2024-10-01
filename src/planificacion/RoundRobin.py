@@ -1,13 +1,13 @@
 import concurrent.futures
 from output.Voz import Voz
+
 class RoundRobin:
     def __init__(self, c_p, c_p_b, gestor, quantum=2):
         self.cola_procesos = c_p
         self.cola_procesos_bloqueados = c_p_b
         self.quantum = quantum
         self.gestor = gestor
-        self.voz=Voz()
-
+        self.voz = Voz()
     def ejecutar_procesos(self):
         """Por medio de hilos, invoca a la clase Evento para obtener los estados dependiendo 
         del nivel de recursos solicitado, y gestiona la ejecución con Quantum."""
@@ -18,8 +18,9 @@ class RoundRobin:
                 proceso = (self.cola_procesos_bloqueados.desencolar() 
                            if not self.cola_procesos_bloqueados.esta_vacia() 
                            else self.cola_procesos.desencolar())
-                message=" Ejecutando proceso por Round Robin."
+                message = "Ejecutando proceso por Round Robin."
                 self.voz.hablar(message)
+
                 if proceso:
                     evento = proceso.getEvento()
 
@@ -53,20 +54,33 @@ class RoundRobin:
 
     def _manejar_proceso_listo(self, proceso, evento, executor, futuros):
         """Maneja el proceso en estado 'Listo', ejecutándolo según el Quantum."""
+        
         if proceso.rafaga_cpu > self.quantum:
             print(f"Ejecutando {proceso.getProceso()} por {self.quantum} segundos.")
+            
+            # Aquí actualizamos el estado gráfico a "Ejecutando"
+            self.gestor.setEstadoGrafico("Ejecutando")
             proceso.ejecutar_comando()
             proceso.rafaga_cpu -= self.quantum
-            if proceso.rafaga_cpu>0:    
+            
+            if proceso.rafaga_cpu > 0:
+                # Si el quantum no fue suficiente, lo reencolamos y cambiamos el estado gráfico a "Esperando"
+                self.gestor.setEstadoGrafico("Esperando")
                 self.cola_procesos.encolar(proceso)
                 print(f"Proceso {proceso.getProceso()} reencolado con {proceso.rafaga_cpu:.2f} segundos restantes.")
 
         else:
             print(f"Ejecutando {proceso.getProceso()} por {proceso.rafaga_cpu:.2f} segundos.")
+            
+            # Actualizamos el estado gráfico a "Ejecutando"
+            self.gestor.setEstadoGrafico("Ejecutando")
             proceso.ejecutar_comando()
             proceso.rafaga_cpu = 0
             evento.avanzarEstado(proceso)
-            message=f"El {proceso.getProceso()} ha terminado."
+            
+            # El proceso ha terminado, cambiamos el estado gráfico a "Quantum agotado"
+            self.gestor.setEstadoGrafico("Quantum agotado")
+            message = f"El {proceso.getProceso()} ha terminado."
             self.voz.hablar(message)
         
         evento.avanzarEstado(proceso)
@@ -81,11 +95,12 @@ class RoundRobin:
             self.gestor.mover_proceso_bloqueado(proceso)
             self.cola_procesos_bloqueados.encolar(proceso)  
         elif evento.getEstado() == "Terminado":
-            message=f"El {proceso.getProceso()} ha terminado."
+            message = f"El {proceso.getProceso()} ha terminado."
+            self.gestor.setEstadoGrafico("Quantum agotado")
             self.voz.hablar(message)
         else:
             futuros.append((executor.submit(proceso.ejecutar), proceso))
-
+    
     def _completar_futuros(self, futuros, procesos_completados):
         """Asegura que todos los procesos en los futuros hayan sido completados."""
         for futuro, proceso in futuros:
@@ -97,3 +112,5 @@ class RoundRobin:
 
             procesos_completados.append(proceso)
             print(f"Proceso completado: {proceso.getProceso()}")
+            if evento.getEstado()=="Terminado":
+                self.gestor.setEstadoGrafico("Quantum agotado")
