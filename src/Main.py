@@ -16,11 +16,11 @@ class BotThread(QThread):
 
     def run(self):
         try:
-            iniciarBot()  # Ejecuta la función del bot
+            iniciarBot() 
         except Exception as e:
             print(f"Error en BotThread: {e}")
         finally:
-            self.finished_signal.emit()  # Emite la señal de finalización
+            self.finished_signal.emit() 
 
 class MainWindow(QMainWindow):
     def __init__(self):
@@ -33,7 +33,7 @@ class MainWindow(QMainWindow):
         self.gestor = GestorProcesos()
         self.json_config = Json()
         self.cores = self.gestor.consulta_cores()
-        self.n = 1  # Contador de procesos
+        self.n = 1  
 
         # Layout principal
         self.layout = QVBoxLayout()

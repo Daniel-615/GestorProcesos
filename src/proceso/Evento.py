@@ -17,7 +17,8 @@ class Evento():
     def getEstado(self):
         return self.estado
     
-    """Defino los métodos para cada Estado, Nuevo, Listo, Bloqueado, Terminado, En ejecución."""
+    """Defino los métodos para cada Estado, Nuevo, Listo, Bloqueado, Terminado, En ejecución.
+    """
     def setEstadoNuevo(self):
         self.estado = "Nuevo"
     

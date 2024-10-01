@@ -5,7 +5,7 @@ class Log():
         self.logger = logging.getLogger(__name__) 
 
         if not self.logger.handlers:  
-            self.logger.setLevel(logging.INFO)  # Nivel de logs: INFO (puedes cambiarlo a DEBUG, WARNING, etc.)
+            self.logger.setLevel(logging.INFO) 
 
           
             file_handler = logging.FileHandler("gestor_procesos.log")
@@ -18,10 +18,6 @@ class Log():
            
             self.logger.addHandler(file_handler)
 
-          
-            # console_handler = logging.StreamHandler()
-            # console_handler.setFormatter(formatter)
-            # self.logger.addHandler(console_handler)
 
     def log_info(self, message):
         """Método para loggear mensajes de información"""
